@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { mockCards, masterCards } from "./lib/card";
+import { useState } from "react";
+import { masterCards } from "./lib/card";
 
 interface Card {
   id: number;
@@ -10,34 +10,46 @@ interface Card {
   hp: number;
 }
 
+interface DeckCard extends Card {
+  quantity: number;
+}
+
 export default function Page() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [deckCards, setDeckCards] = useState<DeckCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchCards();
-  }, []);
-
-  const fetchCards = async () => {
-    // モックデータを使用
-    setCards(mockCards);
-  };
-
-  const addCard = () => {
+  const addCardToDeck = () => {
     if (selectedCard) {
-      setCards([...cards, { ...selectedCard, id: cards.length + 1 }]);
+      const existingCard = deckCards.find(card => card.id === selectedCard.id);
+      if (existingCard) {
+        setDeckCards(deckCards.map(card => card.id === selectedCard.id ? { ...card, quantity: card.quantity + 1 } : card));
+      } else {
+        setDeckCards([...deckCards, { ...selectedCard, quantity: 1 }]);
+      }
       setSelectedCard(null);
       setSearchTerm("");
     }
   };
 
+  const incrementCard = (id: number) => {
+    setDeckCards(deckCards.map(card =>
+      card.id === id ? { ...card, quantity: card.quantity + 1 } : card
+    ));
+  };
+
+  const decrementCard = (id: number) => {
+    setDeckCards(deckCards.map(card =>
+      card.id === id ? { ...card, quantity: card.quantity - 1 } : card
+    ).filter(card => card.quantity > 0));
+  };
+
   const deleteCard = (id: number) => {
-    setCards(cards.filter((card) => card.id !== id));
+    setDeckCards(deckCards.filter((card) => card.id !== id));
   };
 
   const filteredMasterCards = masterCards.filter((card) =>
-    card.name.toLowerCase().includes(searchTerm.toLowerCase())
+    card.name.toLowerCase().includes(searchTerm.toLowerCase()) || card.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -68,18 +80,20 @@ export default function Page() {
           </ul>
         )}
         <button
-          onClick={addCard}
+          onClick={addCardToDeck}
           className="bg-blue-500 text-white p-2 rounded"
         >
           Add Card
         </button>
       </div>
       <ul className="list-disc pl-5">
-        {cards.map((card) => (
+        {deckCards.map((card) => (
           <li key={card.id} className="mb-2">
             <span className="font-semibold">
-              {card.name} - {card.type} - {card.hp} HP
+              {card.name} - {card.type} - {card.hp} HP - {card.quantity}
             </span>
+            <button onClick={() => incrementCard(card.id)} className="bg-blue-500 text-white p-1 ml-2 rounded">+</button>
+              <button onClick={() => decrementCard(card.id)} className="bg-red-500 text-white p-1 ml-2 rounded">-</button>
             <button
               className="bg-red-500 text-white p-1 ml-2 rounded"
               onClick={() => deleteCard(card.id)}
