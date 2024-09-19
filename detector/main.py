@@ -9,7 +9,7 @@ app = FastAPI()
 
 @app.post("/image")
 async def upload_image(file: UploadFile = File(...), confident: float = 0.5):
-    reader = easyocr.Reader(['en'], gpu=False)
+    reader = easyocr.Reader(['en'])
     image = Image.open(io.BytesIO(await file.read()))
     with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
         image.save(tmp.name)
