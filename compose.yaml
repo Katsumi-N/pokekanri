@@ -4,34 +4,42 @@ services:
     container_name: pokekanri_mysql
     environment:
       MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: pokekanri
+      MYSQL_DATABASE: pokekanridb
     ports:
       - "13306:3306"
     volumes:
       - type: volume
         source: mysql-data
         target: /var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+      - ./sql/my.cnf:/etc/mysql/conf.d/my.cnf
   elasticsearch:
     container_name: pokekanri_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
     ports:
       - "19200:9200"
-      - "19300:9300"
     ulimits:
       memlock:
         soft: -1
         hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    mem_limit: 2g
-    memswap_limit: 2g
-    cap_add:
-      - IPC_LOCK
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+      - xpack.security.enabled=false
+      - xpack.ml.enabled=false
     volumes:
       - type: volume
         source: elasticsearch-data
         target: /usr/share/elasticsearch/data
+  kibana:
+    container_name: pokekanri_kibana
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    ports:
+      - "15601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: "http://pokekanri_elasticsearch:9200"
 volumes:
   mysql-data:
     driver: "local"
