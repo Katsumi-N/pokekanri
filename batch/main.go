@@ -19,6 +19,10 @@ func main() {
 		cmd.TrainerSeeder()
 	case "make-pokemon-seeder":
 		cmd.PokemonSeeder()
+	case "feed-pokemon":
+		cmd.FeedPokemon()
+	case "feed-trainer":
+		cmd.FeedTrainer()
 	default:
 		fmt.Println("Unknown command")
 	}
