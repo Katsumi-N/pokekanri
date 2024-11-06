@@ -14,3 +14,4 @@ export interface Card {
     { id: 2, name: "Bulbasaur", type: "Grass", hp: 45 },
     // 他のカードデータ
   ];
+  
