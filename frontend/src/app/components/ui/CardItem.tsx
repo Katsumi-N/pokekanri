@@ -1,4 +1,4 @@
-import { DeckCard } from "../../../lib/card";
+import { DeckCard } from "../../lib/card";
 import { Button } from "@/app/components/ui/shadcn/button";
 
 interface CardItemProps {
@@ -19,9 +19,9 @@ export default function CardItem({ card, onIncrement, onDecrement, onDelete }: C
         </div>
       </div>
       <div className="flex space-x-2">
-        <Button onClick={onIncrement} className="bg-blue-500 text-white p-2 rounded-md">+</Button>
-        <Button onClick={onDecrement} className="bg-red-500 text-white p-2 rounded-md">-</Button>
-        <Button onClick={onDelete} className="bg-red-500 text-white p-2 rounded-md">Delete</Button>
+        <Button onClick={onIncrement}>+</Button>
+        <Button onClick={onDecrement}>-</Button>
+        <Button onClick={onDelete}>Delete</Button>
       </div>
     </div>
   );

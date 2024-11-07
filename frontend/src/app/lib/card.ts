@@ -1,16 +1,20 @@
-export interface Card {
-    id: number;
-    name: string;
-    type: string;
-    hp: number;
-  }
+export interface CardInfo {
+  id: number;
+  name: string;
+  type: string;
+  hp?: number;
+}
   
-  export interface DeckCard extends Card {
-    quantity: number;
-  }
+export interface DeckCard extends CardInfo {
+  quantity: number;
+}
   
-  export const masterCards: Card[] = [
-    { id: 1, name: "Pikachu", type: "Electric", hp: 35 },
-    { id: 2, name: "Bulbasaur", type: "Grass", hp: 45 },
-    // 他のカードデータ
-  ];
+export const masterCards: CardInfo[] = [
+  { id: 1, name: "ピカチュウ", type: "雷", hp: 40 },
+  { id: 2, name: "ライチュウ", type: "雷", hp: 100 },
+  { id: 3, name: "ピカチュウex", type: "雷", hp: 100 },
+  { id: 4, name: "ハイパーボール", type: "グッズ" },
+  { id: 5, name: "ピカチュウexピカチュウexピカチュウex", type: "雷", hp: 100 },
+  // 他のカードデータ
+];
+  

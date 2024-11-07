@@ -1,5 +1,4 @@
 import { Input } from "@/app/components/ui/shadcn/input";
-import { Button } from "@/app/components/ui/shadcn/button";
 
 interface SearchBarProps {
   searchTerm: string;
