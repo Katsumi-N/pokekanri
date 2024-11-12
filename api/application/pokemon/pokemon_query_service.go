@@ -7,6 +7,7 @@ type SearchPokemonList struct {
 	Name       string `json:"name"`
 	EnergyType string `json:"energy_type"`
 	Hp         int    `json:"hp"`
+	ImageURL   string `json:"image_url"`
 }
 
 type PokemonQueryService interface {

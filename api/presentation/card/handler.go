@@ -37,6 +37,7 @@ func (h *handler) SearchCardList(c echo.Context) error {
 			Name:       dtoPokemon.Name,
 			EnergyType: dtoPokemon.EnergyType,
 			Hp:         dtoPokemon.Hp,
+			ImageURL:   dtoPokemon.ImageURL,
 		})
 	}
 
@@ -45,6 +46,7 @@ func (h *handler) SearchCardList(c echo.Context) error {
 			ID:          dtoTrainer.ID,
 			Name:        dtoTrainer.Name,
 			TrainerType: dtoTrainer.TrainerType,
+			ImageURL:    dtoTrainer.ImageURL,
 		})
 	}
 

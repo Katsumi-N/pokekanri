@@ -46,6 +46,7 @@ func (uc *SearchPokemonAndTrainerUseCase) SearchPokemonAndTrainerList(ctx contex
 			Name:       f.Name,
 			EnergyType: f.EnergyType,
 			Hp:         f.Hp,
+			ImageURL:   f.ImageURL,
 		})
 	}
 
@@ -54,6 +55,7 @@ func (uc *SearchPokemonAndTrainerUseCase) SearchPokemonAndTrainerList(ctx contex
 			ID:          fmt.Sprintf("%v", f.ID),
 			Name:        f.Name,
 			TrainerType: f.TrainerType,
+			ImageURL:    f.ImageURL,
 		})
 	}
 

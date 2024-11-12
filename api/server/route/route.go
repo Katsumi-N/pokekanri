@@ -13,10 +13,10 @@ func InitRoute(e *echo.Echo) {
 	e.Use(middleware.Recover())
 	v1 := e.Group("/v1")
 
-	searchRoute(v1)
+	cardSearchRoute(v1)
 }
 
-func searchRoute(g *echo.Group) {
+func cardSearchRoute(g *echo.Group) {
 	pokemonRepository := query_service.NewPokemonQueryService()
 	trainerRepository := query_service.NewTrainerQueryService()
 	cardRepository := card.NewSearchPokemonAndTrainerUseCase(
@@ -25,6 +25,6 @@ func searchRoute(g *echo.Group) {
 	)
 	h := cardPre.NewHandler(cardRepository)
 
-	group := g.Group("/search")
-	group.GET("/pokemon", h.SearchCardList)
+	group := g.Group("/cards")
+	group.GET("/search", h.SearchCardList)
 }

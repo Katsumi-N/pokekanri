@@ -14,6 +14,7 @@ type SearchPokemonUseCaseDto struct {
 	Name       string
 	EnergyType string
 	Hp         int
+	ImageURL   string
 }
 
 func (uc *SearchPokemonUseCase) SearchPokemonList(ctx context.Context, q string) ([]*SearchPokemonUseCaseDto, error) {
@@ -29,6 +30,7 @@ func (uc *SearchPokemonUseCase) SearchPokemonList(ctx context.Context, q string)
 			Name:       f.Name,
 			EnergyType: f.EnergyType,
 			Hp:         f.Hp,
+			ImageURL:   f.ImageURL,
 		}
 		dtoList = append(dtoList, dto)
 	}

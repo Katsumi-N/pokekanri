@@ -13,6 +13,7 @@ type SearchTrainerUseCaseDto struct {
 	ID          string
 	Name        string
 	TrainerType string
+	ImageURL    string
 }
 
 func (uc *SearchTrainerUseCase) SearchTrainerList(ctx context.Context, q string) ([]*SearchTrainerUseCaseDto, error) {
@@ -27,6 +28,7 @@ func (uc *SearchTrainerUseCase) SearchTrainerList(ctx context.Context, q string)
 			ID:          fmt.Sprintf("%v", f.ID),
 			Name:        f.Name,
 			TrainerType: f.TrainerType,
+			ImageURL:    f.ImageURL,
 		}
 		dtoList = append(dtoList, dto)
 	}
