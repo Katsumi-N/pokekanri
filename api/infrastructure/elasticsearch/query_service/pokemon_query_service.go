@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strings"
+	"unicode"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
@@ -28,6 +30,8 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 		return nil, err
 	}
 
+	q = hiraganaToKatakana(q)
+
 	req := &search.Request{
 		Query: &types.Query{
 			Bool: &types.BoolQuery{
@@ -35,13 +39,6 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 					{
 						Match: map[string]types.MatchQuery{
 							"name": {Query: q},
-						},
-					},
-				},
-				Should: []types.Query{
-					{
-						Match: map[string]types.MatchQuery{
-							"description": {Query: q},
 						},
 					},
 				},
@@ -65,4 +62,16 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 	}
 
 	return searchPokemonList, nil
+}
+
+func hiraganaToKatakana(input string) string {
+	var result strings.Builder
+	for _, r := range input {
+		if unicode.In(r, unicode.Hiragana) {
+			result.WriteRune(r + 0x60)
+		} else {
+			result.WriteRune(r)
+		}
+	}
+	return result.String()
 }
