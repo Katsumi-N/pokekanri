@@ -6,14 +6,6 @@ interface CardListProps {
   currentPage: number;
 }
 
-const errRes = new Response(JSON.stringify({ pokemons: [], trainers: [] }), {
-  status: 500,
-  statusText: "Internal Server Error",
-  headers: {
-    "Content-Type": "application/json"
-  }
-});
-
 const fetchCards = async (query: string, page: number): Promise<CardInfo[]> => {
   if (!query) {
     return [];
