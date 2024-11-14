@@ -1,7 +1,7 @@
 'use client';
 
-import { useCardContext } from '@/app/context/CardContext';
-import { Button } from "@/app/components/ui/shadcn/button";
+import { useCardContext } from '../../context/CardContext';
+import { Button } from "./shadcn/button";
 import Image from 'next/image';
 
 export default function CardInventory() {
