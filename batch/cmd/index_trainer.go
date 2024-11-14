@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -44,35 +45,40 @@ func FeedTrainer() {
 	}
 	defer rows.Close()
 
+	var buf bytes.Buffer
 	for rows.Next() {
 		var trainer Trainer
 		if err := rows.Scan(&trainer.ID, &trainer.Name, &trainer.TrainerType, &trainer.ImageURL, &trainer.Description); err != nil {
 			log.Fatalf("Error scanning row: %s", err)
 		}
 
-		trainerJSON, err := json.Marshal(trainer)
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "trainer", "_id" : "%d" } }%s`, trainer.ID, "\n"))
+		data, err := json.Marshal(trainer)
 		if err != nil {
-			log.Fatalf("Error marshaling pokemon to JSON: %s", err)
+			log.Fatalf("Error marshaling trainer to JSON: %s", err)
 		}
 
-		req := esapi.IndexRequest{
-			Index:      "trainer",
-			DocumentID: fmt.Sprintf("%d", trainer.ID),
-			Body:       strings.NewReader(string(trainerJSON)),
-			Refresh:    "true",
-		}
+		data = append(data, "\n"...)
+		buf.Grow(len(meta) + len(data))
+		buf.Write(meta)
+		buf.Write(data)
+	}
 
-		res, err := req.Do(context.Background(), es)
-		if err != nil {
-			log.Fatalf("Error getting response: %s", err)
-		}
-		defer res.Body.Close()
+	req := esapi.BulkRequest{
+		Body:    strings.NewReader(buf.String()),
+		Refresh: "true",
+	}
 
-		if res.IsError() {
-			log.Printf("[%s] Error indexing document ID=%d", res.Status(), trainer.ID)
-		} else {
-			log.Printf("[%s] Document ID=%d indexed successfully", res.Status(), trainer.ID)
-		}
+	res, err := req.Do(context.Background(), es)
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		log.Printf("Error indexing documents: %s", res.String())
+	} else {
+		log.Printf("Documents indexed successfully")
 	}
 
 	if err := rows.Err(); err != nil {
