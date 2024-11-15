@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from "./shadcn/input";
+import { Input } from "@/components/ui/shadcn/input";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 

@@ -1,4 +1,4 @@
-import { CardInfo } from "../../lib/card";
+import { CardInfo } from "@/lib/card";
 import SearchedCardList from "./SearchResultCardList";
 
 interface CardListProps {

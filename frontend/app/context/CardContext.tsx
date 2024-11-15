@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { CardInfo, CardInventoryInfo } from '../lib/card';
+import { CardInfo, CardInventoryInfo } from '@/lib/card';
 
 interface CardContextType {
   cards: CardInventoryInfo[];

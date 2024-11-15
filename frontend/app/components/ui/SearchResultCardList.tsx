@@ -1,8 +1,8 @@
 'use client';
 
-import { CardInfo } from "../../lib/card";
+import { CardInfo } from "@/lib/card";
 import Image from 'next/image';
-import { useCardContext } from '../../context/CardContext';
+import { useCardContext } from '@/context/CardContext';
 
 interface ClientCardListProps {
   cards: CardInfo[];
