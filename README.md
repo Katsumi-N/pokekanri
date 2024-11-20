@@ -1,8 +1,8 @@
 # pokekanri
-ポケカの在庫管理アプリ
+Manage your pokemon card stock!
 
 # Demo
-※デザインは未定!!
+※Design is not fixed!!
 
 https://github.com/user-attachments/assets/9186ab27-400f-4aae-8412-a7817472ec70
 
@@ -14,3 +14,13 @@ Backend
 - Elasticsearch: search
 - FastAPI(Python): OCR(TODO)
 - supabase: authentication
+
+# How to run in local
+Frontend
+- `$ cd frontend`
+- `$ pnpm dev`
+
+Backend
+- `$ docker compose up` to run db & Elasticsearch
+- `$ cd api`
+- `$ go run cmd/main.go`
