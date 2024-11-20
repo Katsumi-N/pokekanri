@@ -7,13 +7,16 @@ Manage your pokemon card stock!
 https://github.com/user-attachments/assets/9186ab27-400f-4aae-8412-a7817472ec70
 
 # Tech Stack
-Frontend
+## Frontend
 - Next.js
-Backend
+
+## Backend
 - Echo(Go): main logic
 - Elasticsearch: search
 - FastAPI(Python): OCR(TODO)
-- supabase: authentication
+
+## Authentication
+- supabase
 
 # How to run in local
 Frontend
