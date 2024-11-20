@@ -19,7 +19,7 @@ export default function SearchResultCardList({ cards }: ClientCardListProps) {
           className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md"
           onClick={() => incrementCard(card)}
         >
-          <Image src={card.image_url} alt={card.name} width={64} height={64} className="object-cover rounded-md mr-4" />
+          <Image src={card.image_url} alt={card.name} width={64} height={64} className="object-cover rounded-md" />
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">{card.name}</h3>
             <p className="text-sm text-gray-600">{card.type} {card.hp ? `- HP ${card.hp}` : ""}</p>

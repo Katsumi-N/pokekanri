@@ -9,7 +9,6 @@ export default function CardInventory() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">所持カード</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {cards.map((card) => (
           <div key={card.id} className="bg-white shadow-md rounded-lg p-4">

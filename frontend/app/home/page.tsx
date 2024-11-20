@@ -15,18 +15,9 @@ export default async function Page(props: {
     redirect('/login')
   }
 
-  const searchParams = await props.searchParams;
-  const query = searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
-
   return (
-    <CardProvider>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Pokekanri</h1>
-        <Search placeholder={""}/>
-        {query.length > 0 && <SearchCardList query={query} currentPage={currentPage} />}
-        <CardInventory />
-      </div>
-    </CardProvider>
+    <div className="container mx-auto p-4">
+      <CardInventory />
+    </div>
   );
 }

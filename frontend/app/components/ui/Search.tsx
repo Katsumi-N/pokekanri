@@ -24,7 +24,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
     <div className="mb-4 flex space-x-2">
       <Input
         type="text"
-        placeholder="Search"
+        placeholder="カードを検索"
         onChange={(e) => handleSearch(e.target.value)}
         className="border p-2 rounded-md flex-grow"
       />
