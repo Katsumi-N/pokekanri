@@ -1,7 +1,4 @@
-import Search from "../components/ui/Search";
-import SearchCardList from "../components/ui/SearchCardList";
-import CardInventory from "../components/ui/CardInventory";
-import { CardProvider } from "../context/CardContext";
+import CardInventory from "@/components/ui/card-inventory";
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 

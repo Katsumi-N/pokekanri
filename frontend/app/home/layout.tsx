@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/shadcn/sidebar';
 import { AppSidebar } from "@/components/ui/app-sidebar";
-import { CardProvider } from "../context/CardContext";
+import { CardProvider } from "@/context/CardContext";
 
 export const experimental_ppr = true;
 

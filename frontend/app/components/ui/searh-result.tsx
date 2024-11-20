@@ -8,7 +8,7 @@ interface ClientCardListProps {
   cards: CardInfo[];
 }
 
-export default function SearchResultCardList({ cards }: ClientCardListProps) {
+export default function SearchResult({ cards }: ClientCardListProps) {
   const { incrementCard } = useCardContext();
 
   return (

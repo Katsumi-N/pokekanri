@@ -1,6 +1,5 @@
-import { CardProvider } from "@/context/CardContext";
-import SearchCardList from "@/components/ui/SearchCardList";
-import Search from "@/components/ui/Search";
+import SearchCard from "@/components/ui/search-card";
+import Searchbar from "@/components/ui/searchbar";
 
 export default async function Page(props: {
   searchParams: Promise<{ query: string; page: string }>;
@@ -11,8 +10,8 @@ export default async function Page(props: {
   const currentPage = Number(searchParams?.page) || 1;
   return (
     <>
-      <Search placeholder={""}/>
-      {query.length > 0 && <SearchCardList query={query} currentPage={currentPage} />}
+      <Searchbar placeholder={""}/>
+      {query.length > 0 && <SearchCard query={query} currentPage={currentPage} />}
     </>
   )
 }

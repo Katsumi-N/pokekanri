@@ -1,5 +1,5 @@
 import { CardInfo } from "@/lib/card";
-import SearchedCardList from "./SearchResultCardList";
+import SearchResult from "@/components/ui/searh-result";
 
 interface CardListProps {
   query: string;
@@ -39,12 +39,12 @@ const fetchCards = async (query: string, page: number): Promise<CardInfo[]> => {
   }
 }
 
-export default async function SearchCardList({ query, currentPage }: CardListProps) {
+export default async function SearchCard({ query, currentPage }: CardListProps) {
   const cards = await fetchCards(query, currentPage);
 
   return (
     <div className="mb-2 bg-white shadow-md rounded-lg p-4">
-      <SearchedCardList cards={cards} />
+      <SearchResult cards={cards} />
     </div>
   );
 }
