@@ -18,17 +18,12 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
     title: "Search",
     url: "/home/search",
     icon: Search,
   },
   {
-    title: "Settings",
+    title: "Settings(TODO)",
     url: "#",
     icon: Settings,
   },
