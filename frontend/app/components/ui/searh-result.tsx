@@ -12,14 +12,12 @@ interface ClientCardListProps {
 }
 
 export default function SearchResult({ cards }: ClientCardListProps) {
-  const { incrementCard } = useCardContext();
+  const { saveCardQuantity } = useCardContext();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
   const handleCardClick = (card: CardInfo) => {
     const quantity = quantities[card.id] || 1;
-    for (let i = 0; i < quantity; i++) {
-      incrementCard(card);
-    }
+    saveCardQuantity(card, quantity);
     toast.success(`${card.name}を追加しました`);
   };
 

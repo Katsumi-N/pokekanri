@@ -5,9 +5,8 @@ import { CardInfo, CardInventoryInfo } from '@/lib/card';
 
 interface CardContextType {
   cards: CardInventoryInfo[];
-  incrementCard: (card: CardInfo) => void;
-  decrementCard: (id: number) => void;
-  deleteCard: (id: number) => void;
+  deleteCard: (id: string) => void;
+  saveCardQuantity: (card: CardInfo, quantity: number) => void;
 }
 
 const CardContext = createContext<CardContextType | undefined>(undefined);
@@ -23,40 +22,25 @@ export const useCardContext = () => {
 export const CardProvider = ({ children }: { children: ReactNode }) => {
   const [cards, setCards] = useState<CardInventoryInfo[]>([]);
 
-  const incrementCard = (card: CardInfo) => {
-    setCards((prevCards) => {
-      const existingCard = prevCards.find(c => c.id === card.id);
-      if (existingCard) {
-        return prevCards.map(c => c.id === card.id ? { ...c, quantity: c.quantity + 1 } : c);
-      } else {
-        return [...prevCards, { ...card, quantity: 1 }];
-      }
-    });
-  };
-
-  const decrementCard = (id: number) => {
-    setCards((prevCards) => {
-      const existingCard = prevCards.find(c => c.id === id);
-      if (existingCard) {
-        if (existingCard.quantity === 1) {
-          return prevCards.filter(c => c.id !== id);
-        } else {
-          return prevCards.map(c => c.id === id ? { ...c, quantity: c.quantity - 1 } : c);
-        }
-      } else {
-        return prevCards;
-      }
-    });
-  };
-
-  const deleteCard = (id: number) => {
+  const deleteCard = (id: string) => {
     setCards((prevCards) => {
       return prevCards.filter(c => c.id !== id);
     });
   };
 
+  const saveCardQuantity = (card: CardInfo, quantity: number) => {
+    setCards((prevCards) => {
+      const existingCard = prevCards.find(c => c.id === card.id);
+      if (existingCard) {
+        return prevCards.map(c => c.id === card.id ? { ...c, quantity: quantity } : c);
+      } else {
+        return [...prevCards, { ...card, quantity: quantity }];
+      }
+    });
+  };
+
   return (
-    <CardContext.Provider value={{ cards, incrementCard, decrementCard, deleteCard }}>
+    <CardContext.Provider value={{ cards, deleteCard, saveCardQuantity }}>
       {children}
     </CardContext.Provider>
   );
