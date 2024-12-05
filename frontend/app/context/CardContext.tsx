@@ -7,6 +7,7 @@ interface CardContextType {
   cards: CardInventoryInfo[];
   deleteCard: (id: string) => void;
   saveCardQuantity: (card: CardInfo, quantity: number) => void;
+  getCardQuantity: (id: string) => number;
 }
 
 const CardContext = createContext<CardContextType | undefined>(undefined);
@@ -39,8 +40,13 @@ export const CardProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const getCardQuantity = (id: string) => {
+    const card = cards.find(c => c.id === id);
+    return card ? card.quantity : 0;
+  }
+
   return (
-    <CardContext.Provider value={{ cards, deleteCard, saveCardQuantity }}>
+    <CardContext.Provider value={{ cards, deleteCard, saveCardQuantity, getCardQuantity }}>
       {children}
     </CardContext.Provider>
   );
