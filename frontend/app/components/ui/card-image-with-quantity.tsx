@@ -10,7 +10,6 @@ interface CardImageWithQuantityProps {
 }
 
 export default function CardImageWithQuantity({ imageUrl, quantity, onClick }: CardImageWithQuantityProps) {
-  console.log(imageUrl);
   return (
     <div className="relative cursor-pointer" onClick={onClick}>
       <Image src={`/images/${imageUrl}`} alt={"card"} width={256} height={256} className="object-cover rounded-md mb-4" />

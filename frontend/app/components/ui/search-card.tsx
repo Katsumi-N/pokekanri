@@ -4,15 +4,16 @@ import SearchResult from "@/components/ui/searh-result";
 interface CardListProps {
   query: string;
   currentPage: number;
+  cardType: string;
 }
 
-const fetchCards = async (query: string, page: number): Promise<CardInfo[]> => {
+const fetchCards = async (query: string, page: number, cardType: string): Promise<CardInfo[]> => {
   if (!query) {
     return [];
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/v1/cards/search?q=${query}&page=${page}`);
+    const response = await fetch(`http://localhost:8080/v1/cards/search?q=${query}&page=${page}&card_type=${cardType}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -39,8 +40,8 @@ const fetchCards = async (query: string, page: number): Promise<CardInfo[]> => {
   }
 }
 
-export default async function SearchCard({ query, currentPage }: CardListProps) {
-  const cards = await fetchCards(query, currentPage);
+export default async function SearchCard({ query, currentPage, cardType }: CardListProps) {
+  const cards = await fetchCards(query, currentPage, cardType);
 
   return (
     <SearchResult cards={cards} />

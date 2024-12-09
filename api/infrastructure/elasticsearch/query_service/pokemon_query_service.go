@@ -38,7 +38,7 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 				Must: []types.Query{
 					{
 						Match: map[string]types.MatchQuery{
-							"name": {Query: q},
+							"name.ngram": {Query: q},
 						},
 					},
 				},

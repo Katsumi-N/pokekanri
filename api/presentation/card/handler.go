@@ -2,6 +2,7 @@ package card
 
 import (
 	"api/application/card"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -24,7 +25,18 @@ func NewHandler(searchCardUseCase *card.SearchPokemonAndTrainerUseCase) handler 
 // @Router /v1/cards/search [get]
 func (h *handler) SearchCardList(c echo.Context) error {
 	q := c.QueryParam("q")
-	dto, err := h.searchCardUseCase.SearchPokemonAndTrainerList(c.Request().Context(), q)
+	cardType := c.QueryParam("card_type")
+	fmt.Println(cardType)
+	dto, err := func(cardType string) (*card.SearchPokemonAndTrainerUseCaseDto, error) {
+		switch cardType {
+		case "pokemon":
+			return h.searchCardUseCase.SearchPokemonList(c.Request().Context(), q)
+		case "trainers":
+			return h.searchCardUseCase.SearchTrainerList(c.Request().Context(), q)
+		default:
+			return h.searchCardUseCase.SearchPokemonAndTrainerList(c.Request().Context(), q)
+		}
+	}(cardType)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

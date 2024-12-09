@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { Input } from "@/components/ui/shadcn/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/shadcn/radio-group";
-import { Label } from "@/components/ui/shadcn/label";
 import { Button } from "@/components/ui/shadcn/button";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
@@ -28,11 +26,10 @@ export default function Searchbar({ placeholder }: { placeholder: string }) {
   const handleCardTypeChange = (type: string) => {
     setCardType(type);
     const params = new URLSearchParams(searchParams);
-    params.set('page', '1');
     if (type !== 'all') {
-      params.set('cardType', type);
+      params.set('card_type', type);
     } else {
-      params.delete('cardType');
+      params.delete('card_type');
     }
     replace(`${pathname}?${params.toString()}`);
   };

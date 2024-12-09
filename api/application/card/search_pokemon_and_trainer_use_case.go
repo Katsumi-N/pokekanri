@@ -61,3 +61,50 @@ func (uc *SearchPokemonAndTrainerUseCase) SearchPokemonAndTrainerList(ctx contex
 
 	return dto, nil
 }
+
+func (uc *SearchPokemonAndTrainerUseCase) SearchPokemonList(ctx context.Context, q string) (*SearchPokemonAndTrainerUseCaseDto, error) {
+	searchPokemonList, err := uc.pokemonQueryService.SearchPokemonList(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := &SearchPokemonAndTrainerUseCaseDto{
+		Pokemons: make([]*pokemon.SearchPokemonUseCaseDto, 0),
+		Trainers: make([]*trainer.SearchTrainerUseCaseDto, 0),
+	}
+
+	for _, f := range searchPokemonList {
+		dto.Pokemons = append(dto.Pokemons, &pokemon.SearchPokemonUseCaseDto{
+			ID:         fmt.Sprintf("%v", f.ID),
+			Name:       f.Name,
+			EnergyType: f.EnergyType,
+			Hp:         f.Hp,
+			ImageURL:   f.ImageURL,
+		})
+	}
+
+	return dto, nil
+}
+
+func (uc *SearchPokemonAndTrainerUseCase) SearchTrainerList(ctx context.Context, q string) (*SearchPokemonAndTrainerUseCaseDto, error) {
+	searchTrainerList, err := uc.trainerQueryService.SearchTrainerList(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := &SearchPokemonAndTrainerUseCaseDto{
+		Pokemons: make([]*pokemon.SearchPokemonUseCaseDto, 0),
+		Trainers: make([]*trainer.SearchTrainerUseCaseDto, 0),
+	}
+
+	for _, f := range searchTrainerList {
+		dto.Trainers = append(dto.Trainers, &trainer.SearchTrainerUseCaseDto{
+			ID:          fmt.Sprintf("%v", f.ID),
+			Name:        f.Name,
+			TrainerType: f.TrainerType,
+			ImageURL:    f.ImageURL,
+		})
+	}
+
+	return dto, nil
+}
