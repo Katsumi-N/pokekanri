@@ -23,6 +23,10 @@ func main() {
 		cmd.FeedPokemon()
 	case "feed-trainer":
 		cmd.FeedTrainer()
+	case "download-image-from-pokemon":
+		cmd.DownloadImageFromPokemon(os.Args[2])
+	case "download-image-from-trainer":
+		cmd.DownloadImageFromTrainers(os.Args[2])
 	default:
 		fmt.Println("Unknown command")
 	}

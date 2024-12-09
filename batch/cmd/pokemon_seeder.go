@@ -39,7 +39,7 @@ func PokemonSeeder() {
 			continue
 		}
 
-		imageUrl := record[1]
+		imageUrl := extractFileName(record[1])
 		name := record[2]
 		energyType := record[3]
 		hp := record[4]

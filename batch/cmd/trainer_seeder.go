@@ -39,7 +39,7 @@ func TrainerSeeder() {
 			continue
 		}
 
-		imageUrl := record[1]
+		imageUrl := extractFileName(record[1])
 		name := record[2]
 		trainerType := record[3]
 		description := record[4]
