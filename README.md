@@ -4,7 +4,7 @@ Manage your pokemon card stock!
 # Demo
 ※Design is not fixed!!
 
-https://github.com/user-attachments/assets/9186ab27-400f-4aae-8412-a7817472ec70
+https://github.com/user-attachments/assets/6a7186b5-5c35-442a-93fb-3745f096efeb
 
 # Tech Stack
 ## Frontend
