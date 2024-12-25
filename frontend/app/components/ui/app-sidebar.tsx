@@ -1,8 +1,9 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Home, Search, Settings } from "lucide-react"
 import Link from "next/link"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,6 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/shadcn/sidebar";
+import { NavUser } from "@/components/ui/nav-user";
+import { UserInfo } from "../../../types/user_info";
 
 const items = [
   {
@@ -22,15 +25,11 @@ const items = [
     url: "/home/search",
     icon: Search,
   },
-  {
-    title: "Settings(TODO)",
-    url: "#",
-    icon: Settings,
-  },
 ]
-export function AppSidebar() {
+
+export function AppSidebar({ ...user }: UserInfo) {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Pokekanri</SidebarGroupLabel>
@@ -50,6 +49,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser {...user} />
+      </SidebarFooter>
     </Sidebar>
   )
 }
