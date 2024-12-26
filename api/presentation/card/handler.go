@@ -2,7 +2,6 @@ package card
 
 import (
 	"api/application/card"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -26,7 +25,6 @@ func NewHandler(searchCardUseCase *card.SearchPokemonAndTrainerUseCase) handler 
 func (h *handler) SearchCardList(c echo.Context) error {
 	q := c.QueryParam("q")
 	cardType := c.QueryParam("card_type")
-	fmt.Println(cardType)
 	dto, err := func(cardType string) (*card.SearchPokemonAndTrainerUseCaseDto, error) {
 		switch cardType {
 		case "pokemon":
