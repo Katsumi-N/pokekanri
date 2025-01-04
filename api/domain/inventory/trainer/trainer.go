@@ -3,7 +3,7 @@ package trainer
 import "errors"
 
 type Trainer struct {
-	id          string
+	id          int
 	name        string
 	trainerType string
 	description string
@@ -16,7 +16,7 @@ const (
 	PokemonsItem = "ポケモンのどうぐ"
 )
 
-func NewTrainer(id string, name string, trainerType string, description string) (*Trainer, error) {
+func NewTrainer(id int, name string, trainerType string, description string) (*Trainer, error) {
 	if !isValidTrainerType(trainerType) {
 		return nil, errors.New("Trainer type must be supporter, stadium or item")
 	}
@@ -34,4 +34,8 @@ func isValidTrainerType(trainerType string) bool {
 		return false
 	}
 	return true
+}
+
+func (t *Trainer) Id() int {
+	return t.id
 }

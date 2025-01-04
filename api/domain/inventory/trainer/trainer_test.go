@@ -6,21 +6,21 @@ import (
 
 func TestNewTrainer(t *testing.T) {
 	tests := map[string]struct {
-		id          string
+		id          int
 		name        string
 		trainerType string
 		description string
 		expectError bool
 	}{
 		"valid": {
-			id:          "1",
+			id:          1,
 			name:        "ハイパーボール",
 			trainerType: Item,
 			description: "好きなポケモン1枚",
 			expectError: false,
 		},
 		"invalid trainer type": {
-			id:          "2",
+			id:          2,
 			name:        "ネストボール",
 			trainerType: "",
 			description: "ベンチにたねポケモン",

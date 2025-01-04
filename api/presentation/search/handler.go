@@ -1,7 +1,7 @@
 package card
 
 import (
-	"api/application/card"
+	card "api/application/search"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

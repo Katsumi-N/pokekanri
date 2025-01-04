@@ -6,7 +6,7 @@ import (
 
 func TestNewPokemon(t *testing.T) {
 	tests := map[string]struct {
-		id          string
+		id          int
 		name        string
 		energyType  string
 		hp          int
@@ -14,7 +14,7 @@ func TestNewPokemon(t *testing.T) {
 		expectError bool
 	}{
 		"valid": {
-			id:          "1",
+			id:          1,
 			name:        "ピカチュウ",
 			energyType:  Electric,
 			hp:          120,
@@ -22,7 +22,7 @@ func TestNewPokemon(t *testing.T) {
 			expectError: false,
 		},
 		"invalid energy type": {
-			id:          "2",
+			id:          2,
 			name:        "ラルトス",
 			energyType:  "Fairy",
 			hp:          120,
@@ -30,7 +30,7 @@ func TestNewPokemon(t *testing.T) {
 			expectError: true,
 		},
 		"invalid hp": {
-			id:          "3",
+			id:          3,
 			name:        "ホゲータ",
 			energyType:  Fire,
 			hp:          -10,

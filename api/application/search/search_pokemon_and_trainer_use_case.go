@@ -1,8 +1,8 @@
-package card
+package search
 
 import (
-	"api/application/pokemon"
-	"api/application/trainer"
+	"api/application/search/pokemon"
+	"api/application/search/trainer"
 	"context"
 	"fmt"
 )

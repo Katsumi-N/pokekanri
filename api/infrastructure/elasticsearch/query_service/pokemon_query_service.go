@@ -1,7 +1,7 @@
 package query_service
 
 import (
-	"api/application/pokemon"
+	"api/application/search/pokemon"
 	"context"
 	"encoding/json"
 	"log"

@@ -1,7 +1,7 @@
 package query_service
 
 import (
-	"api/application/trainer"
+	"api/application/search/trainer"
 	"context"
 	"encoding/json"
 	"log"

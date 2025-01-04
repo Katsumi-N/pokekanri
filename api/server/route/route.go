@@ -1,9 +1,9 @@
 package route
 
 import (
-	"api/application/card"
+	"api/application/search"
 	"api/infrastructure/elasticsearch/query_service"
-	cardPre "api/presentation/card"
+	searchPre "api/presentation/search"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,12 +19,22 @@ func InitRoute(e *echo.Echo) {
 func cardSearchRoute(g *echo.Group) {
 	pokemonRepository := query_service.NewPokemonQueryService()
 	trainerRepository := query_service.NewTrainerQueryService()
-	cardRepository := card.NewSearchPokemonAndTrainerUseCase(
+	searchRepository := search.NewSearchPokemonAndTrainerUseCase(
 		pokemonRepository,
 		trainerRepository,
 	)
-	h := cardPre.NewHandler(cardRepository)
+	h := searchPre.NewHandler(searchRepository)
 
 	group := g.Group("/cards")
 	group.GET("/search", h.SearchCardList)
 }
+
+// func inventoryRoute(g *echo.Group) {
+// 	pokemonRepository := repository.NewPokemonRepository()
+// 	trainerRepository := repository.NewTrainerRepository()
+
+// 	h := cardPre.NewHandler(cardRepository)
+// 	group := g.Group("/inventories")
+// 	group.POST("/pokemon", h.StoreCard)
+// 	group.POST("/trainer", h.StoreCard)
+// }

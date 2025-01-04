@@ -42,7 +42,7 @@ func (m *MockPokemonRepository) EXPECT() *MockPokemonRepositoryMockRecorder {
 }
 
 // FindById mocks base method.
-func (m *MockPokemonRepository) FindById(ctx context.Context, pokemonId string) (*Pokemon, error) {
+func (m *MockPokemonRepository) FindById(ctx context.Context, pokemonId int) (*Pokemon, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindById", ctx, pokemonId)
 	ret0, _ := ret[0].(*Pokemon)

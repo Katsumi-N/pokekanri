@@ -3,7 +3,7 @@ package pokemon
 import "errors"
 
 type Pokemon struct {
-	id          string
+	id          int
 	name        string
 	energyType  string
 	hp          int
@@ -25,7 +25,7 @@ const (
 
 var validEnergyTypes = []string{Fire, Water, Electric, Fight, Psychic, Grass, Steel, Dark, Colorless, Dragon}
 
-func NewPokemon(id string, name string, energyType string, hp int, description string) (*Pokemon, error) {
+func NewPokemon(id int, name string, energyType string, hp int, description string) (*Pokemon, error) {
 	if !isValidEnergyType(energyType) {
 		return nil, errors.New("energy type must be valid type")
 	}
@@ -50,4 +50,8 @@ func isValidEnergyType(energyType string) bool {
 		}
 	}
 	return false
+}
+
+func (p *Pokemon) Id() int {
+	return p.id
 }

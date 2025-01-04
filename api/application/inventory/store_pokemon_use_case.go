@@ -18,7 +18,7 @@ func NewStorePokemonUseCase(pokemonRepo pokemonDomain.PokemonRepository) *StoreP
 }
 
 type StorePokemonCardUseCaseDto struct {
-	PokemonId string
+	PokemonId int
 	Quantity  int
 }
 
