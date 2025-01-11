@@ -2,6 +2,7 @@ package inventory
 
 import (
 	"api/application/inventory"
+	"api/pkg/validator"
 	"net/http"
 	"time"
 
@@ -36,6 +37,14 @@ func (h *inventoryHandler) StoreCard(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	validate := validator.GetValidator()
+	if err := validate.Struct(req); err != nil {
+		return c.JSON(http.StatusBadRequest, storeCardErrResponse{
+			Result:  false,
+			Message: err.Error(),
+		})
+	}
+
 	switch req.CardType {
 	case "pokemon":
 		dto := inventory.StorePokemonCardUseCaseDto{
@@ -44,7 +53,10 @@ func (h *inventoryHandler) StoreCard(c echo.Context) error {
 		}
 		err := h.storePokemonUseCase.Save(c.Request().Context(), req.UserId, dto, time.Now())
 		if err != nil {
-			return c.JSON(500, err.Error())
+			return c.JSON(500, storeCardErrResponse{
+				Result:  false,
+				Message: err.Error(),
+			})
 		}
 		return c.JSON(200, storeCardResponse{
 			Result: true,
