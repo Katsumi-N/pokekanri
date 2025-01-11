@@ -1,8 +1,11 @@
 package route
 
 import (
+	"api/application/inventory"
 	"api/application/search"
 	"api/infrastructure/elasticsearch/query_service"
+	"api/infrastructure/mysql/repository"
+	inventoryPre "api/presentation/inventory"
 	searchPre "api/presentation/search"
 
 	"github.com/labstack/echo/v4"
@@ -14,6 +17,7 @@ func InitRoute(e *echo.Echo) {
 	v1 := e.Group("/v1")
 
 	cardSearchRoute(v1)
+	cardInventoryRoute(v1)
 }
 
 func cardSearchRoute(g *echo.Group) {
@@ -23,18 +27,19 @@ func cardSearchRoute(g *echo.Group) {
 		pokemonRepository,
 		trainerRepository,
 	)
-	h := searchPre.NewHandler(searchRepository)
+	h := searchPre.NewSearchHandler(searchRepository)
 
 	group := g.Group("/cards")
 	group.GET("/search", h.SearchCardList)
 }
 
-// func inventoryRoute(g *echo.Group) {
-// 	pokemonRepository := repository.NewPokemonRepository()
-// 	trainerRepository := repository.NewTrainerRepository()
+func cardInventoryRoute(g *echo.Group) {
+	pokemonRepository := repository.NewPokemonRepository()
+	trainerRepository := repository.NewTrainerRepository()
 
-// 	h := cardPre.NewHandler(cardRepository)
-// 	group := g.Group("/inventories")
-// 	group.POST("/pokemon", h.StoreCard)
-// 	group.POST("/trainer", h.StoreCard)
-// }
+	pokemonUsecase := inventory.NewStorePokemonUseCase(pokemonRepository)
+	trainerUsecase := inventory.NewStoreTrainerUseCase(trainerRepository)
+	h := inventoryPre.NewInventoryHandler(pokemonUsecase, trainerUsecase)
+	group := g.Group("/cards")
+	group.POST("/inventories", h.StoreCard)
+}

@@ -1,4 +1,4 @@
-package card
+package search
 
 import (
 	card "api/application/search"
@@ -7,22 +7,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type handler struct {
+type searchHandler struct {
 	searchCardUseCase *card.SearchPokemonAndTrainerUseCase
 }
 
-func NewHandler(searchCardUseCase *card.SearchPokemonAndTrainerUseCase) handler {
-	return handler{searchCardUseCase}
+func NewSearchHandler(searchCardUseCase *card.SearchPokemonAndTrainerUseCase) searchHandler {
+	return searchHandler{searchCardUseCase}
 }
 
 // SearchCardList godoc
 // @Summary Search card list
-// @Tags cards
+// @Tags search
 // @Accept json
 // @Produce json
 // @Success 200 {object} getProductsResponse
 // @Router /v1/cards/search [get]
-func (h *handler) SearchCardList(c echo.Context) error {
+func (h *searchHandler) SearchCardList(c echo.Context) error {
 	q := c.QueryParam("q")
 	cardType := c.QueryParam("card_type")
 	dto, err := func(cardType string) (*card.SearchPokemonAndTrainerUseCaseDto, error) {

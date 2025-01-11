@@ -42,7 +42,7 @@ func (m *MockTrainerRepository) EXPECT() *MockTrainerRepositoryMockRecorder {
 }
 
 // FindById mocks base method.
-func (m *MockTrainerRepository) FindById(ctx context.Context, trainerId string) (*Trainer, error) {
+func (m *MockTrainerRepository) FindById(ctx context.Context, trainerId int) (*Trainer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindById", ctx, trainerId)
 	ret0, _ := ret[0].(*Trainer)

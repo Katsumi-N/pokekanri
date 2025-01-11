@@ -5,6 +5,7 @@ import (
 	"api/infrastructure/mysql/db"
 	"api/infrastructure/mysql/db/dbgen"
 	"context"
+	"log"
 	"time"
 )
 
@@ -30,9 +31,10 @@ func (r *pokemonRepository) Save(ctx context.Context, pokemon *pokemon.Pokemon, 
 
 func (r *pokemonRepository) FindById(ctx context.Context, pokemonId int) (*pokemon.Pokemon, error) {
 	query := db.GetQuery(ctx)
-
 	p, err := query.PokemonFindById(ctx, int64(pokemonId))
+
 	if err != nil {
+		log.Printf("error in PokemonFindById err: %v", err)
 		return nil, err
 	}
 

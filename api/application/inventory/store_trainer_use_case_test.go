@@ -28,9 +28,9 @@ func TestStoreTrainerUseCase_Save(t *testing.T) {
 		expectError  bool
 	}{
 		"valid_pokemon": {
-			dto: StoreTrainerCardUseCaseDto{TrainerId: "001", Quantity: 10},
+			dto: StoreTrainerCardUseCaseDto{TrainerId: 1, Quantity: 10},
 			mockFindById: func() {
-				mockTrainerRepo.EXPECT().FindById(ctx, "001").Return(&trainer.Trainer{}, nil)
+				mockTrainerRepo.EXPECT().FindById(ctx, 1).Return(&trainer.Trainer{}, nil)
 			},
 			mockSave: func() {
 				mockTrainerRepo.EXPECT().Save(ctx, &trainer.Trainer{}, userId, 10, now).Return(nil)
@@ -38,25 +38,25 @@ func TestStoreTrainerUseCase_Save(t *testing.T) {
 			expectError: false,
 		},
 		"pokemon_not_found": {
-			dto: StoreTrainerCardUseCaseDto{TrainerId: "002", Quantity: 5},
+			dto: StoreTrainerCardUseCaseDto{TrainerId: 2, Quantity: 5},
 			mockFindById: func() {
-				mockTrainerRepo.EXPECT().FindById(ctx, "002").Return(nil, nil)
+				mockTrainerRepo.EXPECT().FindById(ctx, 2).Return(nil, nil)
 			},
 			mockSave:    func() {},
 			expectError: true,
 		},
 		"find_error": {
-			dto: StoreTrainerCardUseCaseDto{TrainerId: "003", Quantity: 3},
+			dto: StoreTrainerCardUseCaseDto{TrainerId: 3, Quantity: 3},
 			mockFindById: func() {
-				mockTrainerRepo.EXPECT().FindById(ctx, "003").Return(nil, errors.New("find error"))
+				mockTrainerRepo.EXPECT().FindById(ctx, 3).Return(nil, errors.New("find error"))
 			},
 			mockSave:    func() {},
 			expectError: true,
 		},
 		"save_error": {
-			dto: StoreTrainerCardUseCaseDto{TrainerId: "004", Quantity: 7},
+			dto: StoreTrainerCardUseCaseDto{TrainerId: 4, Quantity: 7},
 			mockFindById: func() {
-				mockTrainerRepo.EXPECT().FindById(ctx, "004").Return(&trainer.Trainer{}, nil)
+				mockTrainerRepo.EXPECT().FindById(ctx, 4).Return(&trainer.Trainer{}, nil)
 			},
 			mockSave: func() {
 				mockTrainerRepo.EXPECT().Save(ctx, &trainer.Trainer{}, userId, 7, now).Return(errors.New("save error"))

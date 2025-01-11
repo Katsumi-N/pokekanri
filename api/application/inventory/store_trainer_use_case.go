@@ -18,7 +18,7 @@ func NewStoreTrainerUseCase(trainerRepo trainerDomain.TrainerRepository) *StoreT
 }
 
 type StoreTrainerCardUseCaseDto struct {
-	TrainerId string
+	TrainerId int
 	Quantity  int
 }
 

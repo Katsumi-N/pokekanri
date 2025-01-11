@@ -15,8 +15,8 @@ type DBConfig struct {
 	Name     string `envconfig:"DB_DATABASE" default:"pokekanridb"`
 	User     string `envconfig:"DB_USER" default:"root"`
 	Password string `envconfig:"DB_PASS" default:"pass"`
-	Port     string `envconfig:"DB_PORT" default:"3306"`
-	Host     string `envconfig:"DB_HOST" default:"db"`
+	Port     string `envconfig:"DB_PORT" default:"13306"`
+	Host     string `envconfig:"DB_HOST" default:"localhost"`
 }
 
 type Server struct {

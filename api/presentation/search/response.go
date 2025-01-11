@@ -1,4 +1,4 @@
-package card
+package search
 
 type searchCardResponse struct {
 	Result   bool       `json:"result"`
