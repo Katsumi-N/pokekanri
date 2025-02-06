@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -15,11 +16,22 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  const { data: session, error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
     redirect('/error')
   }
+
+  const jwt = session.session.access_token
+
+  // set the JWT in the cookie
+  cookies().set('token', jwt, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+    path: '/',
+  })
 
   revalidatePath('/', 'layout')
   redirect('/home')
