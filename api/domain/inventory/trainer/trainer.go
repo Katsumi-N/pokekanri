@@ -36,6 +36,14 @@ func isValidTrainerType(trainerType string) bool {
 	return true
 }
 
-func (t *Trainer) Id() int {
+func (t *Trainer) GetId() int {
 	return t.id
+}
+
+func (t *Trainer) GetName() string {
+	return t.name
+}
+
+func (t *Trainer) GetCardTypeId() int {
+	return 2
 }

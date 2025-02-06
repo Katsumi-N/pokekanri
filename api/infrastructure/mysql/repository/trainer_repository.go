@@ -19,7 +19,7 @@ func (r *trainerRepository) Save(ctx context.Context, trainer *trainer.Trainer, 
 
 	if err := query.InsertInventory(ctx, dbgen.InsertInventoryParams{
 		UserID:     userId,
-		CardID:     int64(trainer.Id()),
+		CardID:     int64(trainer.GetId()),
 		CardTypeID: 2,
 		Quantity:   int32(quantity),
 	}); err != nil {

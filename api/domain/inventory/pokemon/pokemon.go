@@ -52,6 +52,14 @@ func isValidEnergyType(energyType string) bool {
 	return false
 }
 
-func (p *Pokemon) Id() int {
+func (p *Pokemon) GetId() int {
 	return p.id
+}
+
+func (p *Pokemon) GetName() string {
+	return p.name
+}
+
+func (p *Pokemon) GetCardTypeId() int {
+	return 1
 }

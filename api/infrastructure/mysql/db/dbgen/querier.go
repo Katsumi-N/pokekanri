@@ -9,9 +9,13 @@ import (
 )
 
 type Querier interface {
+	DeleteCardFromInventory(ctx context.Context, id int64) error
+	FindCardFromInventory(ctx context.Context, arg FindCardFromInventoryParams) (FindCardFromInventoryRow, error)
 	InsertInventory(ctx context.Context, arg InsertInventoryParams) error
+	InventoryFindByUserId(ctx context.Context, userID string) ([]Inventory, error)
 	PokemonFindById(ctx context.Context, id int64) (Pokemon, error)
 	TrainerFindById(ctx context.Context, id int64) (Trainer, error)
+	UpdateInventoryQuantity(ctx context.Context, arg UpdateInventoryQuantityParams) error
 }
 
 var _ Querier = (*Queries)(nil)

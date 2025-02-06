@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Server Server
 	DB     DBConfig
+	JWT    JWT
 }
 
 type DBConfig struct {
@@ -22,6 +23,10 @@ type DBConfig struct {
 type Server struct {
 	Address string `envconfig:"ADDRESS" default:"0.0.0.0"`
 	Port    string `envconfig:"PORT" default:"8080"`
+}
+
+type JWT struct {
+	Secret string `envconfig:"JWT_SECRET" default:"super-secret-jwt-token-with-at-least-32-characters-long"`
 }
 
 var (

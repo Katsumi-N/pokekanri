@@ -4,20 +4,18 @@ import (
 	"api/application/inventory"
 	"api/pkg/validator"
 	"net/http"
-	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
 type inventoryHandler struct {
-	storePokemonUseCase *inventory.StorePokemonUseCase
-	storeTrainerUseCase *inventory.StoreTrainerUseCase
+	SaveInventoryUseCase *inventory.SaveInventoryUseCase
 }
 
-func NewInventoryHandler(storePokemonUseCase *inventory.StorePokemonUseCase, storeTrainerUseCase *inventory.StoreTrainerUseCase) *inventoryHandler {
+func NewCollectionHandler(saveInventoryUseCase *inventory.SaveInventoryUseCase) *inventoryHandler {
 	return &inventoryHandler{
-		storePokemonUseCase: storePokemonUseCase,
-		storeTrainerUseCase: storeTrainerUseCase,
+		SaveInventoryUseCase: saveInventoryUseCase,
 	}
 }
 
@@ -31,8 +29,18 @@ func NewInventoryHandler(storePokemonUseCase *inventory.StorePokemonUseCase, sto
 // @Param quantity query int true "Quantity"
 // @Success 200 {object} storeCardResponse
 // @Router /v1/cards/inventories [post]
-func (h *inventoryHandler) StoreCard(c echo.Context) error {
-	var req PostStoreCardRequest
+func (h *inventoryHandler) SaveCard(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, storeCardErrResponse{
+			Result:  false,
+			Message: "User authentication failed",
+		})
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	userId := claims["sub"].(string)
+
+	var req PostSaveCardRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -45,38 +53,30 @@ func (h *inventoryHandler) StoreCard(c echo.Context) error {
 		})
 	}
 
+	var cardType int
 	switch req.CardType {
 	case "pokemon":
-		dto := inventory.StorePokemonCardUseCaseDto{
-			PokemonId: req.CardId,
-			Quantity:  req.Quantity,
-		}
-		err := h.storePokemonUseCase.Save(c.Request().Context(), req.UserId, dto, time.Now())
-		if err != nil {
-			return c.JSON(500, storeCardErrResponse{
-				Result:  false,
-				Message: err.Error(),
-			})
-		}
-		return c.JSON(200, storeCardResponse{
-			Result: true,
-		})
+		cardType = 1
 	case "trainer":
-		dto := inventory.StoreTrainerCardUseCaseDto{
-			TrainerId: req.CardId,
-			Quantity:  req.Quantity,
-		}
-		err := h.storeTrainerUseCase.Save(c.Request().Context(), req.UserId, dto, time.Now())
-		if err != nil {
-			return c.JSON(500, err.Error())
-		}
-		return c.JSON(200, storeCardResponse{
-			Result: true,
-		})
+		cardType = 2
+	case "energy":
+		cardType = 3
 	default:
-		return c.JSON(400, storeCardErrResponse{
+		return c.JSON(http.StatusBadRequest, storeCardErrResponse{
 			Result:  false,
 			Message: "invalid card type",
 		})
 	}
+
+	err := h.SaveInventoryUseCase.SaveInventory(c.Request().Context(), userId, req.CardId, cardType, req.Quantity)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, storeCardErrResponse{
+			Result:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, storeCardResponse{
+		Result: true,
+	})
 }

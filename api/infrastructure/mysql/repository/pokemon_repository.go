@@ -20,7 +20,7 @@ func (r *pokemonRepository) Save(ctx context.Context, pokemon *pokemon.Pokemon, 
 
 	if err := query.InsertInventory(ctx, dbgen.InsertInventoryParams{
 		UserID:     userId,
-		CardID:     int64(pokemon.Id()),
+		CardID:     int64(pokemon.GetId()),
 		CardTypeID: 1,
 		Quantity:   int32(quantity),
 	}); err != nil {

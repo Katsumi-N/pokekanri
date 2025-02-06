@@ -3,21 +3,33 @@ package route
 import (
 	"api/application/inventory"
 	"api/application/search"
+	"api/config"
 	"api/infrastructure/elasticsearch/query_service"
 	"api/infrastructure/mysql/repository"
 	inventoryPre "api/presentation/inventory"
 	searchPre "api/presentation/search"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func InitRoute(e *echo.Echo) {
 	e.Use(middleware.Recover())
+
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "time=${time_rfc3339_nano}, method=${method}, uri=${uri}, status=${status}\n",
+	}))
+
+	jwtSecret := config.GetConfig().JWT.Secret
+	jwtMiddleware := echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(jwtSecret),
+	})
+
 	v1 := e.Group("/v1")
 
 	cardSearchRoute(v1)
-	cardInventoryRoute(v1)
+	cardInventoryRoute(v1, jwtMiddleware)
 }
 
 func cardSearchRoute(g *echo.Group) {
@@ -33,13 +45,13 @@ func cardSearchRoute(g *echo.Group) {
 	group.GET("/search", h.SearchCardList)
 }
 
-func cardInventoryRoute(g *echo.Group) {
-	pokemonRepository := repository.NewPokemonRepository()
-	trainerRepository := repository.NewTrainerRepository()
+func cardInventoryRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
 
-	pokemonUsecase := inventory.NewStorePokemonUseCase(pokemonRepository)
-	trainerUsecase := inventory.NewStoreTrainerUseCase(trainerRepository)
-	h := inventoryPre.NewInventoryHandler(pokemonUsecase, trainerUsecase)
-	group := g.Group("/cards")
-	group.POST("/inventories", h.StoreCard)
+	inventoryRepo := repository.NewInventoryRepository()
+	inventoryUseCase := inventory.NewUpdateCollectionUseCase(inventoryRepo)
+
+	h := inventoryPre.NewCollectionHandler(inventoryUseCase)
+
+	group := g.Group("/cards", jwtMiddleware)
+	group.POST("/inventories", h.SaveCard)
 }

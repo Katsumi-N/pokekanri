@@ -7,7 +7,90 @@ package dbgen
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
+
+const deleteCardFromInventory = `-- name: DeleteCardFromInventory :exec
+DELETE FROM inventories
+WHERE id = ?
+`
+
+func (q *Queries) DeleteCardFromInventory(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteCardFromInventory, id)
+	return err
+}
+
+const findCardFromInventory = `-- name: FindCardFromInventory :one
+SELECT i.id, user_id, card_id, card_type_id, quantity, i.created_at, i.updated_at, p.id, p.name, energy_type, p.image_url, hp, p.description, p.created_at, p.updated_at, t.id, t.name, trainer_type, t.image_url, t.description, t.created_at, t.updated_at FROM inventories i
+LEFT JOIN
+    pokemons p ON i.card_id = p.id AND i.card_type_id = 1
+LEFT JOIN
+    trainers t ON i.card_id = t.id AND i.card_type_id = 2
+WHERE i.user_id = ? AND i.card_id = ? AND i.card_type_id = ? 
+LIMIT 1
+`
+
+type FindCardFromInventoryParams struct {
+	UserID     string `json:"user_id"`
+	CardID     int64  `json:"card_id"`
+	CardTypeID int64  `json:"card_type_id"`
+}
+
+type FindCardFromInventoryRow struct {
+	ID            int64          `json:"id"`
+	UserID        string         `json:"user_id"`
+	CardID        int64          `json:"card_id"`
+	CardTypeID    int64          `json:"card_type_id"`
+	Quantity      int32          `json:"quantity"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+	ID_2          sql.NullInt64  `json:"id_2"`
+	Name          sql.NullString `json:"name"`
+	EnergyType    sql.NullString `json:"energy_type"`
+	ImageUrl      sql.NullString `json:"image_url"`
+	Hp            sql.NullInt64  `json:"hp"`
+	Description   sql.NullString `json:"description"`
+	CreatedAt_2   sql.NullTime   `json:"created_at_2"`
+	UpdatedAt_2   sql.NullTime   `json:"updated_at_2"`
+	ID_3          sql.NullInt64  `json:"id_3"`
+	Name_2        sql.NullString `json:"name_2"`
+	TrainerType   sql.NullString `json:"trainer_type"`
+	ImageUrl_2    sql.NullString `json:"image_url_2"`
+	Description_2 sql.NullString `json:"description_2"`
+	CreatedAt_3   sql.NullTime   `json:"created_at_3"`
+	UpdatedAt_3   sql.NullTime   `json:"updated_at_3"`
+}
+
+func (q *Queries) FindCardFromInventory(ctx context.Context, arg FindCardFromInventoryParams) (FindCardFromInventoryRow, error) {
+	row := q.db.QueryRowContext(ctx, findCardFromInventory, arg.UserID, arg.CardID, arg.CardTypeID)
+	var i FindCardFromInventoryRow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CardID,
+		&i.CardTypeID,
+		&i.Quantity,
+	&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ID_2,
+		&i.Name,
+		&i.EnergyType,
+		&i.ImageUrl,
+		&i.Hp,
+		&i.Description,
+		&i.CreatedAt_2,
+		&i.UpdatedAt_2,
+		&i.ID_3,
+		&i.Name_2,
+		&i.TrainerType,
+		&i.ImageUrl_2,
+		&i.Description_2,
+		&i.CreatedAt_3,
+		&i.UpdatedAt_3,
+	)
+	return i, err
+}
 
 const insertInventory = `-- name: InsertInventory :exec
 INSERT INTO inventories (
@@ -34,5 +117,57 @@ func (q *Queries) InsertInventory(ctx context.Context, arg InsertInventoryParams
 		arg.CardTypeID,
 		arg.Quantity,
 	)
+	return err
+}
+
+const inventoryFindByUserId = `-- name: InventoryFindByUserId :many
+SELECT id, user_id, card_id, card_type_id, quantity, created_at, updated_at FROM inventories
+WHERE user_id = ?
+`
+
+func (q *Queries) InventoryFindByUserId(ctx context.Context, userID string) ([]Inventory, error) {
+	rows, err := q.db.QueryContext(ctx, inventoryFindByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Inventory{}
+	for rows.Next() {
+		var i Inventory
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CardID,
+			&i.CardTypeID,
+			&i.Quantity,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateInventoryQuantity = `-- name: UpdateInventoryQuantity :exec
+UPDATE inventories
+SET quantity = ?
+WHERE id = ?
+`
+
+type UpdateInventoryQuantityParams struct {
+	Quantity int32 `json:"quantity"`
+	ID       int64 `json:"id"`
+}
+
+func (q *Queries) UpdateInventoryQuantity(ctx context.Context, arg UpdateInventoryQuantityParams) error {
+	_, err := q.db.ExecContext(ctx, updateInventoryQuantity, arg.Quantity, arg.ID)
 	return err
 }
