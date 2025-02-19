@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CollectionFindByUserId(ctx context.Context, userID string) ([]CollectionFindByUserIdRow, error)
 	DeleteCardFromInventory(ctx context.Context, id int64) error
 	FindCardFromInventory(ctx context.Context, arg FindCardFromInventoryParams) (FindCardFromInventoryRow, error)
 	InsertInventory(ctx context.Context, arg InsertInventoryParams) error

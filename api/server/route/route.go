@@ -1,11 +1,14 @@
 package route
 
 import (
+	"api/application/collection"
 	"api/application/inventory"
 	"api/application/search"
 	"api/config"
-	"api/infrastructure/elasticsearch/query_service"
+	elasticQueryService "api/infrastructure/elasticsearch/query_service"
+	mysqlQueryService "api/infrastructure/mysql/query_service"
 	"api/infrastructure/mysql/repository"
+	collectionPre "api/presentation/collection"
 	inventoryPre "api/presentation/inventory"
 	searchPre "api/presentation/search"
 
@@ -30,11 +33,12 @@ func InitRoute(e *echo.Echo) {
 
 	cardSearchRoute(v1)
 	cardInventoryRoute(v1, jwtMiddleware)
+	cardCollectionRoute(v1, jwtMiddleware)
 }
 
 func cardSearchRoute(g *echo.Group) {
-	pokemonRepository := query_service.NewPokemonQueryService()
-	trainerRepository := query_service.NewTrainerQueryService()
+	pokemonRepository := elasticQueryService.NewPokemonQueryService()
+	trainerRepository := elasticQueryService.NewTrainerQueryService()
 	searchRepository := search.NewSearchPokemonAndTrainerUseCase(
 		pokemonRepository,
 		trainerRepository,
@@ -46,12 +50,21 @@ func cardSearchRoute(g *echo.Group) {
 }
 
 func cardInventoryRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
-
 	inventoryRepo := repository.NewInventoryRepository()
 	inventoryUseCase := inventory.NewUpdateCollectionUseCase(inventoryRepo)
 
-	h := inventoryPre.NewCollectionHandler(inventoryUseCase)
+	h := inventoryPre.NewInventoryHandler(inventoryUseCase)
 
 	group := g.Group("/cards", jwtMiddleware)
 	group.POST("/inventories", h.SaveCard)
+}
+
+func cardCollectionRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
+	collectionQueryService := mysqlQueryService.NewCollectionQueryService()
+	collectionUseCase := collection.NewFetchCollectionUseCase(collectionQueryService)
+
+	h := collectionPre.NewCollectionHandler(collectionUseCase)
+
+	group := g.Group("/cards", jwtMiddleware)
+	group.GET("/collections", h.FetchCollection)
 }

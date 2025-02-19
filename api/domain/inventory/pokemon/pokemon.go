@@ -8,6 +8,7 @@ type Pokemon struct {
 	energyType  string
 	hp          int
 	description string
+	imageUrl    string
 }
 
 const (
@@ -25,7 +26,7 @@ const (
 
 var validEnergyTypes = []string{Fire, Water, Electric, Fight, Psychic, Grass, Steel, Dark, Colorless, Dragon}
 
-func NewPokemon(id int, name string, energyType string, hp int, description string) (*Pokemon, error) {
+func NewPokemon(id int, name string, energyType string, hp int, description string, imageUrl string) (*Pokemon, error) {
 	if !isValidEnergyType(energyType) {
 		return nil, errors.New("energy type must be valid type")
 	}
@@ -40,6 +41,7 @@ func NewPokemon(id int, name string, energyType string, hp int, description stri
 		energyType:  energyType,
 		hp:          hp,
 		description: description,
+		imageUrl:    imageUrl,
 	}, nil
 }
 
@@ -62,4 +64,8 @@ func (p *Pokemon) GetName() string {
 
 func (p *Pokemon) GetCardTypeId() int {
 	return 1
+}
+
+func (p *Pokemon) GetImageUrl() string {
+	return p.imageUrl
 }

@@ -41,6 +41,7 @@ func (r *trainerRepository) FindById(ctx context.Context, trainerId int) (*train
 		t.Name,
 		t.TrainerType,
 		t.Description,
+		t.ImageUrl,
 	)
 	if err != nil {
 		return nil, err

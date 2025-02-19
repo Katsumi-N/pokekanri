@@ -13,7 +13,7 @@ type inventoryHandler struct {
 	SaveInventoryUseCase *inventory.SaveInventoryUseCase
 }
 
-func NewCollectionHandler(saveInventoryUseCase *inventory.SaveInventoryUseCase) *inventoryHandler {
+func NewInventoryHandler(saveInventoryUseCase *inventory.SaveInventoryUseCase) *inventoryHandler {
 	return &inventoryHandler{
 		SaveInventoryUseCase: saveInventoryUseCase,
 	}

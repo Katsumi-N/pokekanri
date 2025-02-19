@@ -1,12 +1,14 @@
 package repository
 
 import (
+	errDomain "api/domain/error"
 	"api/domain/inventory"
 	"api/domain/inventory/pokemon"
 	"api/domain/inventory/trainer"
 	"api/infrastructure/mysql/db"
 	"api/infrastructure/mysql/db/dbgen"
 	"context"
+	"database/sql"
 	"errors"
 )
 
@@ -16,13 +18,13 @@ func NewInventoryRepository() *inventoryRepository {
 	return &inventoryRepository{}
 }
 
-func (r *inventoryRepository) Save(ctx context.Context, inventory *inventory.Inventory, userId string) error {
+func (r *inventoryRepository) Save(ctx context.Context, userId string, cardId int, cardTypeId int, quantity int) error {
 	query := db.GetQuery(ctx)
 	err := query.InsertInventory(ctx, dbgen.InsertInventoryParams{
 		UserID:     userId,
-		CardID:     int64(inventory.GetCard().GetId()),
-		CardTypeID: int64(inventory.GetCard().GetCardTypeId()),
-		Quantity:   int32(inventory.GetQuantity()),
+		CardID:     int64(cardId),
+		CardTypeID: int64(cardTypeId),
+		Quantity:   int32(quantity),
 	})
 	if err != nil {
 		return err
@@ -52,6 +54,9 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 		CardTypeID: int64(cardTypeId),
 	})
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errDomain.NotFoundErr
+		}
 		return nil, err
 	}
 
@@ -63,6 +68,7 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 			card.EnergyType.String,
 			int(card.Hp.Int64),
 			card.Description.String,
+			card.ImageUrl.String,
 		)
 		if err != nil {
 			return nil, err
@@ -78,6 +84,7 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 			card.Name.String,
 			card.TrainerType.String,
 			card.Description.String,
+			card.ImageUrl.String,
 		)
 		if err != nil {
 			return nil, err

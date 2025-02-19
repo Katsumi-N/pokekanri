@@ -71,7 +71,7 @@ func (q *Queries) FindCardFromInventory(ctx context.Context, arg FindCardFromInv
 		&i.CardID,
 		&i.CardTypeID,
 		&i.Quantity,
-	&i.CreatedAt,
+		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ID_2,
 		&i.Name,

@@ -1,8 +1,10 @@
 package inventory
 
 import (
+	errDomain "api/domain/error"
 	inventoryDomain "api/domain/inventory"
 	"context"
+	"fmt"
 )
 
 type SaveInventoryUseCase struct {
@@ -17,7 +19,8 @@ func NewUpdateCollectionUseCase(inventoryRepo inventoryDomain.InventoryRepositor
 
 func (u *SaveInventoryUseCase) SaveInventory(ctx context.Context, userId string, cardId int, cardTypeId int, quantity int) error {
 	inv, err := u.inventoryRepo.FindCardFromInventory(ctx, userId, cardId, cardTypeId)
-	if err != nil {
+	if err != nil && err != errDomain.NotFoundErr {
+		fmt.Println("application inventory SaveInventoryUseCase FindCardFromInventory error: ", err)
 		return err
 	}
 
@@ -28,6 +31,6 @@ func (u *SaveInventoryUseCase) SaveInventory(ctx context.Context, userId string,
 	if inv != nil {
 		return u.inventoryRepo.Update(ctx, inv.GetID(), quantity)
 	} else {
-		return u.inventoryRepo.Save(ctx, inv, userId)
+		return u.inventoryRepo.Save(ctx, userId, cardId, cardTypeId, quantity)
 	}
 }

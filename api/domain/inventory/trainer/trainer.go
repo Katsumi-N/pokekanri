@@ -7,6 +7,7 @@ type Trainer struct {
 	name        string
 	trainerType string
 	description string
+	imageUrl    string
 }
 
 const (
@@ -16,7 +17,7 @@ const (
 	PokemonsItem = "ポケモンのどうぐ"
 )
 
-func NewTrainer(id int, name string, trainerType string, description string) (*Trainer, error) {
+func NewTrainer(id int, name string, trainerType string, description string, imageUrl string) (*Trainer, error) {
 	if !isValidTrainerType(trainerType) {
 		return nil, errors.New("Trainer type must be supporter, stadium or item")
 	}
@@ -26,6 +27,7 @@ func NewTrainer(id int, name string, trainerType string, description string) (*T
 		name:        name,
 		trainerType: trainerType,
 		description: description,
+		imageUrl:    imageUrl,
 	}, nil
 }
 
@@ -46,4 +48,8 @@ func (t *Trainer) GetName() string {
 
 func (t *Trainer) GetCardTypeId() int {
 	return 2
+}
+
+func (t *Trainer) GetImageUrl() string {
+	return t.imageUrl
 }

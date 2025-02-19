@@ -44,6 +44,7 @@ func (r *pokemonRepository) FindById(ctx context.Context, pokemonId int) (*pokem
 		p.EnergyType,
 		int(p.Hp),
 		p.Description,
+		p.ImageUrl,
 	)
 	if err != nil {
 		return nil, err

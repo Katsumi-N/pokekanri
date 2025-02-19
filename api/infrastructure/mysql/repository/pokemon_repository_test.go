@@ -14,7 +14,7 @@ func TestPokemonRepository_FindById(t *testing.T) {
 	setupFixtures(t)
 
 	repo := NewPokemonRepository()
-	pika, _ := pokemon.NewPokemon(1, "ピカチュウex", "雷", 230, "テラスタル")
+	pika, _ := pokemon.NewPokemon(1, "ピカチュウex", "雷", 230, "テラスタル", "https://example.com/pikachuex.png")
 	tests := map[string]struct {
 		pokemonId   int
 		expected    *pokemon.Pokemon
