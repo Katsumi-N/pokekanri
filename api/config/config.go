@@ -1,8 +1,12 @@
 package config
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"sync"
 
+	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -13,20 +17,20 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Name     string `envconfig:"DB_DATABASE" default:"pokekanridb"`
-	User     string `envconfig:"DB_USER" default:"root"`
-	Password string `envconfig:"DB_PASS" default:"pass"`
-	Port     string `envconfig:"DB_PORT" default:"13306"`
-	Host     string `envconfig:"DB_HOST" default:"localhost"`
+	Name     string `envconfig:"DB_DATABASE"`
+	User     string `envconfig:"DB_USER"`
+	Password string `envconfig:"DB_PASS"`
+	Port     string `envconfig:"DB_PORT"`
+	Host     string `envconfig:"DB_HOST"`
 }
 
 type Server struct {
-	Address string `envconfig:"ADDRESS" default:"0.0.0.0"`
-	Port    string `envconfig:"PORT" default:"8080"`
+	Address string `envconfig:"ADDRESS"`
+	Port    string `envconfig:"PORT"`
 }
 
 type JWT struct {
-	Secret string `envconfig:"JWT_SECRET" default:"super-secret-jwt-token-with-at-least-32-characters-long"`
+	Secret string `envconfig:"JWT_SECRET"`
 }
 
 var (
@@ -35,7 +39,14 @@ var (
 )
 
 func GetConfig() *Config {
-	// goroutine実行中でも一度だけ実行される
+	if os.Getenv("GO_ENV") == "" {
+		os.Setenv("GO_ENV", "development")
+	}
+
+	if err := godotenv.Load(fmt.Sprintf(".env.%s", os.Getenv("GO_ENV"))); err != nil {
+		log.Printf("No .env file found")
+	}
+
 	once.Do(func() {
 		if err := envconfig.Process("", &config); err != nil {
 			panic(err)
