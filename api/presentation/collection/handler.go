@@ -47,15 +47,28 @@ func (h *collectionHandler) FetchCollection(c echo.Context) error {
 
 	var res fetchCollectionReponse
 	res.Result = true
-	for _, dto := range collection {
-		res.Cards = append(res.Cards, Card{
-			InventoryId: dto.Id,
-			CardName:    dto.CardName,
-			CardId:      dto.CardId,
-			CardTypeId:  dto.CardTypeId,
-			ImageUrl:    dto.ImageUrl,
-			Quantity:    dto.Quantity,
+
+	for _, p := range collection.Pokemons {
+		res.Pokemons = append(res.Pokemons, Card{
+			InventoryId:     p.Id,
+			CardId:          p.CardId,
+			CardName:        p.CardName,
+			CardDescription: "",
+			ImageUrl:        p.ImageUrl,
+			Quantity:        p.Quantity,
 		})
 	}
+
+	for _, t := range collection.Trainers {
+		res.Trainers = append(res.Trainers, Card{
+			InventoryId:     t.Id,
+			CardId:          t.CardId,
+			CardName:        t.CardName,
+			CardDescription: "",
+			ImageUrl:        t.ImageUrl,
+			Quantity:        t.Quantity,
+		})
+	}
+
 	return c.JSON(http.StatusOK, res)
 }

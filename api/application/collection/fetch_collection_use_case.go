@@ -12,7 +12,7 @@ func NewFetchCollectionUseCase(collectionQueryService CollectionQueryService) *F
 	}
 }
 
-func (uc *FetchCollectionUseCase) FetchCollection(ctx context.Context, userId string) ([]*FetchCollectionDto, error) {
+func (uc *FetchCollectionUseCase) FetchCollection(ctx context.Context, userId string) (*FetchCollectionDto, error) {
 	collection, err := uc.collectionQueryService.FetchCollection(ctx, userId)
 	if err != nil {
 		return nil, err
