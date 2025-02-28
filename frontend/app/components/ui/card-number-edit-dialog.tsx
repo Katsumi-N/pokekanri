@@ -18,10 +18,10 @@ interface CardDetailProps {
   card: CardInventoryInfo;
   tempQuantity: number;
   incrementCard: (card: CardInventoryInfo) => void;
-  decrementCard: (id: string) => void;
+  decrementCard: (id: number) => void;
   saveCardQuantity: (card: CardInventoryInfo, quantity: number) => void;
-  deleteCard: (id: string) => void;
-  selectedCardId: string | null;
+  deleteCard: (id: number) => void;
+  selectedCardId: number | null;
   closeModal: () => void;
 }
 
@@ -35,7 +35,7 @@ export default function CardNumberEditDialog({
   selectedCardId,
   closeModal,
 }: CardDetailProps) {
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     closeModal();
     deleteCard(id);
   };
@@ -46,7 +46,7 @@ export default function CardNumberEditDialog({
         <DialogHeader>
           <DialogTitle>{card.name}</DialogTitle>
           <DialogDescription>
-            <p className="text-sm text-gray-600">{card.type} {card.hp ? `- HP ${card.hp}` : ""}</p>
+            <p className="text-sm text-gray-600">{card.energy_type} {card.hp ? `- HP ${card.hp}` : ""}</p>
             <p className="text-sm text-gray-600">枚数: {card.quantity}</p>
           </DialogDescription>
         </DialogHeader>

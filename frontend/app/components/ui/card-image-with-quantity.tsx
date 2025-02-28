@@ -6,7 +6,7 @@ import Image from 'next/image';
 interface CardImageWithQuantityProps {
   imageUrl: string;
   quantity: number;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export default function CardImageWithQuantity({ imageUrl, quantity, onClick }: CardImageWithQuantityProps) {

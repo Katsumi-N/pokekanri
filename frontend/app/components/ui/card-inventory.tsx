@@ -9,17 +9,17 @@ import CardImageWithQuantity from '@/components/ui/card-image-with-quantity';
 export default function CardInventory() {
   const { cards, deleteCard, saveCardQuantity } = useCardContext();
   const [tempQuantities, setTempQuantities] = useState<{ [key: string]: number }>({});
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
   
   const incrementCard = (card: CardInfo) => {
     setTempQuantities((prev) => ({ ...prev, [card.id]: (prev[card.id] || 0) + 1 }));
   }
 
-  const decrementCard = (id: string) => {
+  const decrementCard = (id: number) => {
     setTempQuantities((prev) => ({ ...prev, [id]: (prev[id] || 0) - 1 }));
   }
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = (id: number) => {
     setSelectedCardId(selectedCardId === id ? null : id);
   }
 

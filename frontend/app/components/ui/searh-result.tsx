@@ -9,28 +9,50 @@ import { Button } from '@/components/ui/shadcn/button';
 
 interface ClientCardListProps {
   cards: CardInfo[];
+  jwt: string;
 }
 
-export default function SearchResult({ cards }: ClientCardListProps) {
+const postInventory = async (card: CardInfo, quantity: number, jwt: string) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/cards/inventories`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({
+      card_id: Number(card.id),
+      card_type: card.category,
+      quantity: quantity,
+      increment: true,
+    }),
+  });
+
+  if (!response.ok) {
+    toast('カードの保存に失敗しました。リトライしてください。');
+  }
+}
+
+export default function SearchResult({ cards, jwt }: ClientCardListProps) {
   const { saveCardQuantity, getCardQuantity } = useCardContext();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
-  const handleCardClick = (card: CardInfo) => {
+  const handleCardClick = async (card: CardInfo) => {
     const quantity = quantities[card.id] || 1;
     const before_quantity = getCardQuantity(card.id);
-    saveCardQuantity(card, quantity);
+    await postInventory(card, quantity, jwt);
     toast(`${card.name}を追加しました`, {
       action: {
         label: "キャンセル",
-        onClick: () => {
+        onClick: async () => {
           toast('キャンセルしました')
+          await postInventory(card, quantity, jwt)
           saveCardQuantity(card, before_quantity)
         },
       },
     })
   };
 
-  const handleQuantityChange = (cardId: string, quantity: number) => {
+  const handleQuantityChange = (cardId: number, quantity: number) => {
     setQuantities((prev) => ({ ...prev, [cardId]: quantity }));
   };
 
@@ -44,7 +66,7 @@ export default function SearchResult({ cards }: ClientCardListProps) {
           <Image src={`/images/${card.image_url}`} alt={card.name} width={256} height={256} className="object-cover rounded-md mb-4" />
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">{card.name}</h3>
-            <p className="text-sm text-gray-600">{card.type} {card.hp ? `- HP ${card.hp}` : ""}</p>
+            <p className="text-sm text-gray-600">{card.energy_type} {card.hp ? `- HP ${card.hp}` : ""}</p>
             <input 
               type="number" 
               min="1" 

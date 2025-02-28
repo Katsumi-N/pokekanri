@@ -1,5 +1,6 @@
 import { CardInfo } from "@/lib/card";
 import SearchResult from "@/components/ui/searh-result";
+import { fetchJwt } from "@/lib/session";
 
 interface CardListProps {
   query: string;
@@ -13,7 +14,7 @@ const fetchCards = async (query: string, page: number, cardType: string): Promis
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/v1/cards/search?q=${query}&page=${page}&card_type=${cardType}`);
+    const response = await fetch(`${process.env.API_BASE_URL}/v1/cards/search?q=${query}&page=${page}&card_type=${cardType}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -22,13 +23,15 @@ const fetchCards = async (query: string, page: number, cardType: string): Promis
       ...(data.pokemons?.map((pokemon: any) => ({
         id: pokemon.id,
         name: pokemon.name,
-        type: pokemon.energy_type,
+        energy_type: pokemon.energy_type,
+        category: 'pokemon',
         image_url: pokemon.image_url,
         hp: pokemon.hp
       })) || []),
       ...(data.trainers?.map((trainer: any) => ({
         id: trainer.id,
         name: trainer.name,
+        category: 'trainer',
         image_url: trainer.image_url
       })) || []),
     ];
@@ -42,8 +45,12 @@ const fetchCards = async (query: string, page: number, cardType: string): Promis
 
 export default async function SearchCard({ query, currentPage, cardType }: CardListProps) {
   const cards = await fetchCards(query, currentPage, cardType);
+  const jwt = await fetchJwt();
+  if (!jwt) {
+    return;
+  }
 
   return (
-    <SearchResult cards={cards} />
+    <SearchResult cards={cards} jwt={jwt} />
   );
 }

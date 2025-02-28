@@ -1,7 +1,8 @@
 export interface CardInfo {
-  id: string;
+  id: number;
   name: string;
-  type: string;
+  energy_type: string;
+  category: string;
   image_url: string;
   hp?: number;
 }

@@ -1,4 +1,4 @@
-import { Home, Search, Settings } from "lucide-react"
+import { Home, Search, Settings, BriefcaseBusiness } from "lucide-react"
 import Link from "next/link"
 import {
   Sidebar,
@@ -25,6 +25,11 @@ const items = [
     url: "/home/search",
     icon: Search,
   },
+  {
+    title: "Collection",
+    url: "/home/collection",
+    icon: BriefcaseBusiness,
+  }
 ]
 
 export function AppSidebar({ ...user }: UserInfo) {

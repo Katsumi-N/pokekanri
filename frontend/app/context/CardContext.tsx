@@ -5,9 +5,9 @@ import { CardInfo, CardInventoryInfo } from '@/lib/card';
 
 interface CardContextType {
   cards: CardInventoryInfo[];
-  deleteCard: (id: string) => void;
+  deleteCard: (id: number) => void;
   saveCardQuantity: (card: CardInfo, quantity: number) => void;
-  getCardQuantity: (id: string) => number;
+  getCardQuantity: (id: number) => number;
 }
 
 const CardContext = createContext<CardContextType | undefined>(undefined);
@@ -23,7 +23,7 @@ export const useCardContext = () => {
 export const CardProvider = ({ children }: { children: ReactNode }) => {
   const [cards, setCards] = useState<CardInventoryInfo[]>([]);
 
-  const deleteCard = (id: string) => {
+  const deleteCard = (id: number) => {
     setCards((prevCards) => {
       return prevCards.filter(c => c.id !== id);
     });
@@ -40,7 +40,7 @@ export const CardProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const getCardQuantity = (id: string) => {
+  const getCardQuantity = (id: number) => {
     const card = cards.find(c => c.id === id);
     return card ? card.quantity : 0;
   }
