@@ -3,6 +3,7 @@ package inventory
 import (
 	"api/application/inventory"
 	"api/pkg/validator"
+	"fmt"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -32,6 +33,7 @@ func NewInventoryHandler(saveInventoryUseCase *inventory.SaveInventoryUseCase) *
 func (h *inventoryHandler) SaveCard(c echo.Context) error {
 	token, ok := c.Get("user").(*jwt.Token)
 	if !ok {
+		fmt.Println("User authentication failed")
 		return c.JSON(http.StatusUnauthorized, storeCardErrResponse{
 			Result:  false,
 			Message: "User authentication failed",
@@ -68,7 +70,7 @@ func (h *inventoryHandler) SaveCard(c echo.Context) error {
 		})
 	}
 
-	err := h.SaveInventoryUseCase.SaveInventory(c.Request().Context(), userId, req.CardId, cardType, req.Quantity)
+	err := h.SaveInventoryUseCase.SaveInventory(c.Request().Context(), userId, req.CardId, cardType, req.Quantity, req.Increment)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, storeCardErrResponse{
 			Result:  false,

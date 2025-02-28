@@ -11,9 +11,10 @@ import (
 )
 
 type Config struct {
-	Server Server
-	DB     DBConfig
-	JWT    JWT
+	Server         Server
+	DB             DBConfig
+	JWT            JWT
+	FrontendConfig FrontendConfig
 }
 
 type DBConfig struct {
@@ -31,6 +32,10 @@ type Server struct {
 
 type JWT struct {
 	Secret string `envconfig:"JWT_SECRET"`
+}
+
+type FrontendConfig struct {
+	BaseUrl string `envconfig:"FRONTEND_BASE_URL"`
 }
 
 var (

@@ -19,7 +19,6 @@ import (
 
 func InitRoute(e *echo.Echo) {
 	e.Use(middleware.Recover())
-
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "time=${time_rfc3339_nano}, method=${method}, uri=${uri}, status=${status}\n",
 	}))
@@ -28,6 +27,12 @@ func InitRoute(e *echo.Echo) {
 	jwtMiddleware := echojwt.WithConfig(echojwt.Config{
 		SigningKey: []byte(jwtSecret),
 	})
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{config.GetConfig().FrontendConfig.BaseUrl}, // フロントエンドのURLを指定
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+	}))
 
 	v1 := e.Group("/v1")
 
