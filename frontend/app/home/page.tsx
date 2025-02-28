@@ -5,7 +5,7 @@ export default async function Page(props: {
 }) {
   return (
     <div className="container mx-auto p-4">
-      <CardInventory />
+      TODO: Notification etc
     </div>
   );
 }

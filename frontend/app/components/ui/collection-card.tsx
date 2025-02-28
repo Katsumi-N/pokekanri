@@ -2,11 +2,12 @@ import { CardInventoryInfo } from "@/lib/card";
 import { redirect } from 'next/navigation'
 import { cookies, headers } from 'next/headers'
 import CardImageWithQuantity from "./card-image-with-quantity";
+import { shouldLoginAlert } from "./should-login";
 
-const fetchUserCollections = async (): Promise<CardInventoryInfo[]> => {
+const fetchUserCollections = async (): Promise<CardInventoryInfo[] | null> => {
   const jwt = cookies().get('token')?.value
   if (!jwt) {
-    return [];
+    return null;
   }
   
   const response = await fetch(`${process.env.API_BASE_URL}/v1/cards/collections`, {
@@ -44,8 +45,12 @@ const fetchUserCollections = async (): Promise<CardInventoryInfo[]> => {
 export default async function UserCollections() {
   const cards = await fetchUserCollections()
 
+  if (cards === null) {
+    return shouldLoginAlert();
+  }
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 justify-items-start">
+    <div className="grid justify-items-start grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
       {cards.map((card) => (
         <CardImageWithQuantity 
           key={card.id}

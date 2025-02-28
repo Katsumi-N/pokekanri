@@ -30,14 +30,28 @@ import {
 import { UserInfo } from "../../../types/user_info"
 import { signout } from "@/utils/supabase/signout"
 import { useRouter } from "next/navigation";
+import { checkLogin } from "@/utils/supabase/checkLogin";
+import { useEffect, useState } from "react";
 
 export function NavUser({ email, avatar, username }: UserInfo) {
   const router = useRouter();
-  const { isMobile } = useSidebar()
-  const isLogin = email !== '';
+  const { isMobile } = useSidebar();
+  const [isLogin, setIsLogin] = useState(false);
+  useEffect(() => {
+    const fetchLogin = async () => {
+      const login = await checkLogin();
+      setIsLogin(login);
+    }
+    fetchLogin();
+  }, []);
+
   const handleLogout = async () => {
-    await signout();
-    router.push('/home');
+    const result = await signout();
+    if (!result) {
+      return;
+    }
+    setIsLogin(false);
+    router.push('/login?msg=logout');
   };
   const handleLogin = () => {
     router.push('/login');
