@@ -22,7 +22,7 @@ const fetchUserCollections = async (): Promise<CardInventoryInfo[]> => {
 
   const data = await response.json();
   const cards: CardInventoryInfo[] = [
-    ...(data.pokemons.map((pokemon: any) => ({
+    ...(data.pokemons?.map((pokemon: any) => ({
       id: pokemon.id,
       name: pokemon.name,
       type: pokemon.energy_type,
@@ -30,7 +30,7 @@ const fetchUserCollections = async (): Promise<CardInventoryInfo[]> => {
       hp: pokemon.hp,
       quantity: pokemon.quantity
     })) || []),
-    ...(data.trainers.map((trainer: any) => ({
+    ...(data.trainers?.map((trainer: any) => ({
       id: trainer.id,
       name: trainer.name,
       image_url: trainer.image_url,
@@ -45,7 +45,7 @@ export default async function UserCollections() {
   const cards = await fetchUserCollections()
 
   return (
-      <div className="grid grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 justify-items-start">
       {cards.map((card) => (
         <CardImageWithQuantity 
           key={card.id}
@@ -53,6 +53,6 @@ export default async function UserCollections() {
           quantity={card.quantity}
         />
       ))}
-      </div>
+    </div>
   );
 }
