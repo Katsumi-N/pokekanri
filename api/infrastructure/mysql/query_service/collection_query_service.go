@@ -2,6 +2,7 @@ package query_service
 
 import (
 	"api/application/collection"
+	"api/domain"
 	"api/infrastructure/mysql/db"
 	"context"
 )
@@ -24,8 +25,8 @@ func (s *collectionQueryService) FetchCollection(ctx context.Context, userId str
 		Trainers: []*collection.CollectionDto{},
 	}
 	for _, c := range colResult {
-		switch c.CardTypeID {
-		case 1:
+		switch domain.CardType(c.CardTypeID) {
+		case domain.Pokemon:
 			collectionDto.Pokemons = append(collectionDto.Pokemons, &collection.CollectionDto{
 				Id:       int(c.ID),
 				CardId:   int(c.CardID),
@@ -33,7 +34,7 @@ func (s *collectionQueryService) FetchCollection(ctx context.Context, userId str
 				ImageUrl: c.ImageUrl,
 				Quantity: int(c.Quantity),
 			})
-		case 2:
+		case domain.Trainer:
 			collectionDto.Trainers = append(collectionDto.Trainers, &collection.CollectionDto{
 				Id:       int(c.ID),
 				CardId:   int(c.CardID),
@@ -44,7 +45,6 @@ func (s *collectionQueryService) FetchCollection(ctx context.Context, userId str
 		default:
 			return nil, nil
 		}
-
 	}
 
 	return collectionDto, nil

@@ -2,6 +2,7 @@ package inventory
 
 import (
 	"api/application/inventory"
+	"api/domain"
 	"api/pkg/validator"
 	"fmt"
 	"net/http"
@@ -55,22 +56,15 @@ func (h *inventoryHandler) SaveCard(c echo.Context) error {
 		})
 	}
 
-	var cardType int
-	switch req.CardType {
-	case "pokemon":
-		cardType = 1
-	case "trainer":
-		cardType = 2
-	case "energy":
-		cardType = 3
-	default:
+	cardType, ok := domain.StringToCardType[req.CardType]
+	if !ok {
 		return c.JSON(http.StatusBadRequest, storeCardErrResponse{
 			Result:  false,
 			Message: "invalid card type",
 		})
 	}
 
-	err := h.SaveInventoryUseCase.SaveInventory(c.Request().Context(), userId, req.CardId, cardType, req.Quantity, req.Increment)
+	err := h.SaveInventoryUseCase.SaveInventory(c.Request().Context(), userId, req.CardId, int(cardType), req.Quantity, req.Increment)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, storeCardErrResponse{
 			Result:  false,
