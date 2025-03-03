@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"api/domain"
 	errDomain "api/domain/error"
 	"api/domain/inventory"
 	"api/domain/inventory/pokemon"
@@ -60,8 +61,8 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 		return nil, err
 	}
 
-	switch cardTypeId {
-	case 1:
+	switch domain.CardType(cardTypeId) {
+	case domain.Pokemon:
 		p, err := pokemon.NewPokemon(
 			int(card.CardID),
 			card.Name.String,
@@ -78,7 +79,7 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 			p,
 			int(card.Quantity),
 		), nil
-	case 2:
+	case domain.Trainer:
 		t, err := trainer.NewTrainer(
 			int(card.CardID),
 			card.Name.String,

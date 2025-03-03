@@ -3,9 +3,9 @@ package domain
 type CardType int
 
 const (
-	Pokemon CardType = 1
-	Trainer CardType = 2
-	Energy  CardType = 3
+	Pokemon CardType = iota + 1
+	Trainer
+	Energy
 )
 
 var CardTypeToString = map[CardType]string{

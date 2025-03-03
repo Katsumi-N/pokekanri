@@ -2,6 +2,7 @@ package search
 
 import (
 	card "api/application/search"
+	"api/domain"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -26,10 +27,10 @@ func (h *searchHandler) SearchCardList(c echo.Context) error {
 	q := c.QueryParam("q")
 	cardType := c.QueryParam("card_type")
 	dto, err := func(cardType string) (*card.SearchPokemonAndTrainerUseCaseDto, error) {
-		switch cardType {
-		case "pokemon":
+		switch domain.StringToCardType[cardType] {
+		case domain.Pokemon:
 			return h.searchCardUseCase.SearchPokemonList(c.Request().Context(), q)
-		case "trainers":
+		case domain.Trainer:
 			return h.searchCardUseCase.SearchTrainerList(c.Request().Context(), q)
 		default:
 			return h.searchCardUseCase.SearchPokemonAndTrainerList(c.Request().Context(), q)
