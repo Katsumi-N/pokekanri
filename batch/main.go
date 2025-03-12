@@ -4,6 +4,7 @@ import (
 	"batch/cmd"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -14,11 +15,17 @@ func main() {
 
 	switch os.Args[1] {
 	case "scraping":
-		cmd.ScrapingCardInfo()
+		startId, _ := strconv.Atoi(os.Args[2])
+		endId, _ := strconv.Atoi(os.Args[3])
+		cmd.ScrapingCardInfo(startId, endId)
 	case "make-trainer-seeder":
 		cmd.TrainerSeeder()
 	case "make-pokemon-seeder":
 		cmd.PokemonSeeder()
+	case "make-pokemon-attack-seeder":
+		cmd.PokemonAttackSeeder()
+	case "make-energy-seeder":
+		cmd.EnergySeeder()
 	case "feed-pokemon":
 		cmd.FeedPokemon()
 	case "feed-trainer":

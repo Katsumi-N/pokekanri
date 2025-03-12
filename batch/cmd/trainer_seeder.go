@@ -31,7 +31,7 @@ func TrainerSeeder() {
 	}
 	defer sqlFile.Close()
 
-	insertStmt := "INSERT INTO trainers (name, trainer_type, image_url, description) VALUES "
+	insertStmt := "INSERT INTO trainers (id, name, trainer_type, image_url, description, regulation, expansion) VALUES "
 	values := []string{}
 	for i, record := range records {
 		// ヘッダー行をスキップ
@@ -39,12 +39,15 @@ func TrainerSeeder() {
 			continue
 		}
 
-		imageUrl := extractFileName(record[1])
-		name := record[2]
-		trainerType := record[3]
+		id := record[0]
+		name := record[1]
+		trainerType := record[2]
+		imageUrl := extractFileName(record[3])
 		description := record[4]
+		regulation := record[5]
+		expansion := record[6]
 
-		value := fmt.Sprintf("('%s', '%s', '%s', '%s')", escapeString(name), escapeString(trainerType), escapeString(imageUrl), escapeString(description))
+		value := fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(trainerType), escapeString(imageUrl), escapeString(description), escapeString(regulation), escapeString(expansion))
 		values = append(values, value)
 	}
 

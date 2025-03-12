@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/joho/godotenv"
 )
@@ -39,6 +40,13 @@ type CardInfo struct {
 	CardId   string
 	ImageURL string
 	Name     string
+}
+
+type PokemonAttack struct {
+	Name           string
+	RequiredEnergy string
+	Damage         string
+	Description    string
 }
 
 func extractCardId(url string) string {
@@ -81,18 +89,19 @@ func RequestPokemonCardSearch(page int) (*CardSearchResponse, error) {
 	return &cardSearchResponse, nil
 }
 
-func ScrapingCardInfo() {
+func ScrapingCardInfo(startPage int, endPage int) {
 	cardMapType := map[string]string{
 		"grass":    "草",
 		"fire":     "炎",
 		"water":    "水",
-		"electric": "電気",
+		"electric": "雷",
 		"psychic":  "超",
 		"dark":     "悪",
 		"fighting": "闘",
 		"steel":    "鋼",
-		"dragon":   "ドラゴン",
-		"none":     "無色",
+		"dragon":   "竜",
+		"none":     "無",
+		"void":     "エネ0",
 	}
 	err := godotenv.Load()
 	if err != nil {
@@ -115,15 +124,37 @@ func ScrapingCardInfo() {
 	}
 	defer trainerFile.Close()
 
+	energyFile, err := os.Create("energy_card.csv")
+	if err != nil {
+		log.Fatal("Cannot create file", err)
+	}
+	defer energyFile.Close()
+
+	pokemonAttackFile, err := os.Create("pokemon_attack.csv")
+	if err != nil {
+		log.Fatal("Cannot create file", err)
+	}
+	defer pokemonAttackFile.Close()
+
 	pokemonWriter := csv.NewWriter(pokemonFile)
 	defer pokemonWriter.Flush()
 
-	pokemonWriter.Write([]string{"CardId", "ImageId", "Name", "Type", "HP", "Description"})
+	pokemonWriter.Write([]string{"CardId", "Name", "EnergyType", "ImageUrl", "HP", "Ability", "AbilityDescription", "Regulation", "Expansion"})
+
+	pokemonAttackWriter := csv.NewWriter(pokemonAttackFile)
+	defer pokemonAttackWriter.Flush()
+
+	pokemonAttackWriter.Write([]string{"PokemonId", "Name", "RequiredEnergy", "Damage", "Description"})
 
 	trainerWriter := csv.NewWriter(trainerFile)
 	defer trainerWriter.Flush()
 
-	trainerWriter.Write([]string{"CardId", "ImageId", "Name", "Type", "Description"})
+	trainerWriter.Write([]string{"CardId", "Name", "TrainerType", "ImageUrl", "Description", "Regulation", "Expansion"})
+
+	energyWriter := csv.NewWriter(energyFile)
+	defer energyWriter.Flush()
+
+	energyWriter.Write([]string{"CardId", "Name", "ImageUrl", "Description", "Regulation", "Expansion"})
 
 	cardLists := make(map[string]CardInfo)
 
@@ -136,8 +167,8 @@ func ScrapingCardInfo() {
 		}
 		current_card := cardLists[cardID]
 
+		regulation := e.ChildAttr("div > div.LeftBox > div.subtext.Text-fjalla > img", "alt")
 		if pokemonFlg {
-			cardDescription := strings.Join(strings.Fields(e.ChildText("div > div.RightBox > div")), " ")
 			classAttr := e.ChildAttr("div > div.RightBox > div > div.TopInfo.Text-fjalla > div > div.td-r > span[class*='icon-']", "class")
 			var cardTypeClass string
 			for _, class := range strings.Split(classAttr, " ") {
@@ -146,12 +177,62 @@ func ScrapingCardInfo() {
 					break
 				}
 			}
-			pokemonWriter.Write([]string{cardID, current_card.ImageURL, current_card.Name, cardTypeClass, cardHP, cardDescription})
-		} else {
-			cardDescription := strings.Join(strings.Fields(e.ChildText("div > div.RightBox > div")), " ")
-			classAttr := e.ChildText(" div > div.RightBox > div > h2")
+			tokusei := e.ChildText("div > div.RightBox > div > h2:nth-child(2)")
+			var abilityName, abilityDescription string
+			if tokusei == "特性" {
+				abilityName = e.ChildText("div > div.RightBox > div > h4:nth-child(3)")
+				abilityDescription = e.ChildText("div > div.RightBox > div > p:nth-child(4)")
+			}
+			// Attackを2つまで取得
+			var attacks []PokemonAttack
+			e.ForEach("div.RightBox-inner h2", func(_ int, el *colly.HTMLElement) {
+				if el.Text == "ワザ" {
+					el.DOM.NextAllFiltered("h4").Each(func(_ int, h4 *goquery.Selection) {
+						moveName := h4.Text()
+						// moveNameから数字を削除, スペースを削除
+						// 90＋ や 10× も直す
+						moveName = strings.TrimSpace(strings.TrimRight(moveName, "0123456789"))
+						moveName = strings.Join(strings.Fields(regexp.MustCompile(`[0-9]+[＋×]`).ReplaceAllString(moveName, "")), "")
 
-			trainerWriter.Write([]string{cardID, current_card.ImageURL, current_card.Name, classAttr, cardDescription})
+						if moveName == "" {
+							return
+						}
+						requiredEnergy := ""
+						h4.Find("span[class*='icon-']").Each(func(_ int, span *goquery.Selection) {
+							class, _ := span.Attr("class")
+							for _, className := range strings.Split(class, " ") {
+								if strings.HasPrefix(className, "icon-") {
+									requiredEnergy += cardMapType[strings.TrimPrefix(className, "icon-")]
+								}
+							}
+						})
+						damage := h4.Find("span.f_right.Text-fjalla").Text()
+						moveEffect := h4.Next().Text()
+						fmt.Println(moveName, requiredEnergy, damage, moveEffect)
+						attacks = append(attacks, PokemonAttack{
+							Name:           moveName,
+							RequiredEnergy: requiredEnergy,
+							Damage:         damage,
+							Description:    moveEffect,
+						})
+					})
+				}
+			})
+
+			// TODO: expansionの取得
+			pokemonWriter.Write([]string{cardID, current_card.Name, cardTypeClass, current_card.ImageURL, cardHP, abilityName, abilityDescription, regulation, ""})
+			for _, attack := range attacks {
+				pokemonAttackWriter.Write([]string{cardID, attack.Name, attack.RequiredEnergy, attack.Damage, attack.Description})
+			}
+		} else {
+			classAttr := e.ChildText(" div > div.RightBox > div > h2")
+			if classAttr == "基本エネルギー" || classAttr == "特殊エネルギー" {
+				description := strings.Join(strings.Fields(e.ChildText("div > div.RightBox > div > p")), "")
+				energyWriter.Write([]string{cardID, current_card.Name, current_card.ImageURL, description, regulation, ""})
+			} else {
+				cardDescription := strings.Join(strings.Fields(e.ChildText("div > div.RightBox > div > p:nth-child(3)")), "")
+				trainerWriter.Write([]string{cardID, current_card.Name, classAttr, current_card.ImageURL, cardDescription, regulation, ""})
+			}
 		}
 	})
 
@@ -164,7 +245,7 @@ func ScrapingCardInfo() {
 	})
 
 	// Call pokemonCardSearch API
-	for page := 1; page <= 100; page++ {
+	for page := startPage; page <= endPage; page++ {
 		cardSearchResponse, err := RequestPokemonCardSearch(page)
 		if err != nil {
 			log.Fatal("Failed to fetch card list", err)
@@ -185,7 +266,7 @@ func ScrapingCardInfo() {
 			cardDetailURL := fmt.Sprintf(cardSearchUrlTemplate, card.CardID)
 			log.Println("cardDetailURL", cardDetailURL)
 			c.Visit(cardDetailURL)
-			time.Sleep(500 * time.Millisecond)
+			time.Sleep(300 * time.Millisecond)
 		}
 	}
 

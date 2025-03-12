@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func PokemonSeeder() {
-	file, err := os.Open("pokemon_card.csv")
+func EnergySeeder() {
+	file, err := os.Open("energy_card.csv")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return
@@ -24,14 +24,14 @@ func PokemonSeeder() {
 		return
 	}
 
-	sqlFile, err := os.Create("../sql/04_pokemon.sql")
+	sqlFile, err := os.Create("../sql/07_energy.sql")
 	if err != nil {
 		fmt.Println("Error creating SQL file:", err)
 		return
 	}
 	defer sqlFile.Close()
 
-	insertStmt := "INSERT INTO pokemons (id, name, energy_type, image_url, hp, ability, ability_description, regulation, expansion) VALUES "
+	insertStmt := "INSERT INTO energies (id, name, image_url, description) VALUES "
 	values := []string{}
 	for i, record := range records {
 		// ヘッダー行をスキップ
@@ -41,15 +41,10 @@ func PokemonSeeder() {
 
 		id := record[0]
 		name := record[1]
-		energyType := record[2]
-		imageUrl := extractFileName(record[3])
-		hp := record[4]
-		ability := record[5]
-		abilityDescription := record[6]
-		regulation := record[7]
-		expansion := record[8]
+		imageUrl := extractFileName(record[2])
+		description := record[3]
 
-		value := fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(energyType), escapeString(imageUrl), hp, escapeString(ability), escapeString(abilityDescription), escapeString(regulation), escapeString(expansion))
+		value := fmt.Sprintf("('%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(imageUrl), escapeString(description))
 		values = append(values, value)
 	}
 
