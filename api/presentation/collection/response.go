@@ -4,6 +4,7 @@ type fetchCollectionReponse struct {
 	Result   bool   `json:"result"`
 	Pokemons []Card `json:"pokemons"`
 	Trainers []Card `json:"trainers"`
+	Energies []Card `json:"energies"`
 }
 
 type fetchCollectionErrResponse struct {

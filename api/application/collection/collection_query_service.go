@@ -13,6 +13,7 @@ type CollectionDto struct {
 type FetchCollectionDto struct {
 	Pokemons []*CollectionDto
 	Trainers []*CollectionDto
+	Energies []*CollectionDto
 }
 
 type CollectionQueryService interface {

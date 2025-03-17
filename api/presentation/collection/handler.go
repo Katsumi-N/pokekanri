@@ -45,8 +45,12 @@ func (h *collectionHandler) FetchCollection(c echo.Context) error {
 		})
 	}
 
-	var res fetchCollectionReponse
-	res.Result = true
+	res := fetchCollectionReponse{
+		Result:   true,
+		Pokemons: []Card{},
+		Trainers: []Card{},
+		Energies: []Card{},
+	}
 
 	for _, p := range collection.Pokemons {
 		res.Pokemons = append(res.Pokemons, Card{
@@ -65,6 +69,16 @@ func (h *collectionHandler) FetchCollection(c echo.Context) error {
 			CardName:    t.CardName,
 			ImageUrl:    t.ImageUrl,
 			Quantity:    t.Quantity,
+		})
+	}
+
+	for _, e := range collection.Energies {
+		res.Energies = append(res.Energies, Card{
+			InventoryId: e.Id,
+			CardId:      e.CardId,
+			CardName:    e.CardName,
+			ImageUrl:    e.ImageUrl,
+			Quantity:    e.Quantity,
 		})
 	}
 

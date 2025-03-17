@@ -23,6 +23,7 @@ func (s *collectionQueryService) FetchCollection(ctx context.Context, userId str
 	collectionDto := &collection.FetchCollectionDto{
 		Pokemons: []*collection.CollectionDto{},
 		Trainers: []*collection.CollectionDto{},
+		Energies: []*collection.CollectionDto{},
 	}
 	for _, c := range colResult {
 		switch domain.CardType(c.CardTypeID) {
@@ -36,6 +37,14 @@ func (s *collectionQueryService) FetchCollection(ctx context.Context, userId str
 			})
 		case domain.Trainer:
 			collectionDto.Trainers = append(collectionDto.Trainers, &collection.CollectionDto{
+				Id:       int(c.ID),
+				CardId:   int(c.CardID),
+				CardName: c.Name,
+				ImageUrl: c.ImageUrl,
+				Quantity: int(c.Quantity),
+			})
+		case domain.Energy:
+			collectionDto.Energies = append(collectionDto.Energies, &collection.CollectionDto{
 				Id:       int(c.ID),
 				CardId:   int(c.CardID),
 				CardName: c.Name,
