@@ -10,7 +10,7 @@ import (
 )
 
 const trainerFindById = `-- name: TrainerFindById :one
-SELECT id, name, trainer_type, image_url, description, created_at, updated_at FROM trainers
+SELECT id, name, trainer_type, image_url, description, regulation, expansion, created_at, updated_at FROM trainers
 WHERE id = ? LIMIT 1
 `
 
@@ -23,6 +23,8 @@ func (q *Queries) TrainerFindById(ctx context.Context, id int64) (Trainer, error
 		&i.TrainerType,
 		&i.ImageUrl,
 		&i.Description,
+		&i.Regulation,
+		&i.Expansion,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

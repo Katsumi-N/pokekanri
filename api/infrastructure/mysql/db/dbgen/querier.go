@@ -11,9 +11,11 @@ import (
 type Querier interface {
 	CollectionFindByUserId(ctx context.Context, userID string) ([]CollectionFindByUserIdRow, error)
 	DeleteCardFromInventory(ctx context.Context, id int64) error
+	EnergyFindById(ctx context.Context, id int64) (Energy, error)
 	FindCardFromInventory(ctx context.Context, arg FindCardFromInventoryParams) (FindCardFromInventoryRow, error)
 	InsertInventory(ctx context.Context, arg InsertInventoryParams) error
 	InventoryFindByUserId(ctx context.Context, userID string) ([]Inventory, error)
+	PokemonAttackFindByPokemonId(ctx context.Context, pokemonID int64) ([]PokemonAttack, error)
 	PokemonFindById(ctx context.Context, id int64) (Pokemon, error)
 	TrainerFindById(ctx context.Context, id int64) (Trainer, error)
 	UpdateInventoryQuantity(ctx context.Context, arg UpdateInventoryQuantityParams) error

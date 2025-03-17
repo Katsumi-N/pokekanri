@@ -12,10 +12,9 @@ type fetchCollectionErrResponse struct {
 }
 
 type Card struct {
-	InventoryId     int    `json:"inventory_id"`
-	CardId          int    `json:"card_id"`
-	CardName        string `json:"card_name"`
-	CardDescription string `json:"card_description"`
-	ImageUrl        string `json:"image_url"`
-	Quantity        int    `json:"quantity"`
+	InventoryId int    `json:"inventory_id"`
+	CardId      int    `json:"card_id"`
+	CardName    string `json:"card_name"`
+	ImageUrl    string `json:"image_url"`
+	Quantity    int    `json:"quantity"`
 }

@@ -11,6 +11,8 @@ func TestNewTrainer(t *testing.T) {
 		trainerType string
 		description string
 		imageUrl    string
+		regulation  string
+		expansion   string
 		expectError bool
 	}{
 		"valid": {
@@ -19,6 +21,8 @@ func TestNewTrainer(t *testing.T) {
 			trainerType: Item,
 			description: "好きなポケモン1枚",
 			imageUrl:    "https://example.com/hyperball.png",
+			regulation:  "SV1",
+			expansion:   "SV1",
 			expectError: false,
 		},
 		"invalid trainer type": {
@@ -27,13 +31,15 @@ func TestNewTrainer(t *testing.T) {
 			trainerType: "",
 			description: "ベンチにたねポケモン",
 			imageUrl:    "https://example.com/nestball.png",
+			regulation:  "SV1",
+			expansion:   "SV1",
 			expectError: true,
 		},
 	}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			trainer, err := NewTrainer(tt.id, tt.name, tt.trainerType, tt.description, tt.imageUrl)
+			trainer, err := NewTrainer(tt.id, tt.name, tt.trainerType, tt.description, tt.imageUrl, tt.regulation, tt.expansion)
 			if tt.expectError {
 				if err == nil {
 					t.Errorf("expected error for input %v, got nil", tt)

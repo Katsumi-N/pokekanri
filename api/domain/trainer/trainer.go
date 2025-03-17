@@ -8,6 +8,8 @@ type Trainer struct {
 	trainerType string
 	description string
 	imageUrl    string
+	regulation  string
+	expansion   string
 }
 
 const (
@@ -17,7 +19,7 @@ const (
 	PokemonsItem = "ポケモンのどうぐ"
 )
 
-func NewTrainer(id int, name string, trainerType string, description string, imageUrl string) (*Trainer, error) {
+func NewTrainer(id int, name string, trainerType string, description string, imageUrl string, regulation string, expansion string) (*Trainer, error) {
 	if !isValidTrainerType(trainerType) {
 		return nil, errors.New("Trainer type must be supporter, stadium or item")
 	}
@@ -28,6 +30,8 @@ func NewTrainer(id int, name string, trainerType string, description string, ima
 		trainerType: trainerType,
 		description: description,
 		imageUrl:    imageUrl,
+		regulation:  regulation,
+		expansion:   expansion,
 	}, nil
 }
 

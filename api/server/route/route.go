@@ -2,6 +2,7 @@ package route
 
 import (
 	"api/application/collection"
+	"api/application/detail"
 	"api/application/inventory"
 	"api/application/search"
 	"api/config"
@@ -9,6 +10,7 @@ import (
 	mysqlQueryService "api/infrastructure/mysql/query_service"
 	"api/infrastructure/mysql/repository"
 	collectionPre "api/presentation/collection"
+	detailPre "api/presentation/detail"
 	inventoryPre "api/presentation/inventory"
 	searchPre "api/presentation/search"
 
@@ -37,6 +39,7 @@ func InitRoute(e *echo.Echo) {
 	v1 := e.Group("/v1")
 
 	cardSearchRoute(v1)
+	cardDetailRoute(v1)
 	cardInventoryRoute(v1, jwtMiddleware)
 	cardCollectionRoute(v1, jwtMiddleware)
 }
@@ -52,6 +55,15 @@ func cardSearchRoute(g *echo.Group) {
 
 	group := g.Group("/cards")
 	group.GET("/search", h.SearchCardList)
+}
+
+func cardDetailRoute(g *echo.Group) {
+	detailRepository := mysqlQueryService.NewDetailQueryService()
+	detailUseCase := detail.NewFetchDetailUseCase(detailRepository)
+	h := detailPre.NewDetailHandler(detailUseCase)
+
+	group := g.Group("/cards")
+	group.GET("/detail/:card_type/:id", h.FetchDetail)
 }
 
 func cardInventoryRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {

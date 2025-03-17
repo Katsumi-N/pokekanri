@@ -5,6 +5,7 @@
 package dbgen
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -13,6 +14,17 @@ type CardType struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Energy struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	ImageUrl    string    `json:"image_url"`
+	Description string    `json:"description"`
+	Regulation  string    `json:"regulation"`
+	Expansion   string    `json:"expansion"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Inventory struct {
@@ -26,14 +38,28 @@ type Inventory struct {
 }
 
 type Pokemon struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	EnergyType  string    `json:"energy_type"`
-	ImageUrl    string    `json:"image_url"`
-	Hp          int64     `json:"hp"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID                 int64          `json:"id"`
+	Name               string         `json:"name"`
+	EnergyType         string         `json:"energy_type"`
+	ImageUrl           string         `json:"image_url"`
+	Hp                 int64          `json:"hp"`
+	Ability            sql.NullString `json:"ability"`
+	AbilityDescription sql.NullString `json:"ability_description"`
+	Regulation         string         `json:"regulation"`
+	Expansion          string         `json:"expansion"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+}
+
+type PokemonAttack struct {
+	ID             int64          `json:"id"`
+	PokemonID      int64          `json:"pokemon_id"`
+	Name           string         `json:"name"`
+	RequiredEnergy string         `json:"required_energy"`
+	Damage         sql.NullString `json:"damage"`
+	Description    sql.NullString `json:"description"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
 }
 
 type Trainer struct {
@@ -42,6 +68,8 @@ type Trainer struct {
 	TrainerType string    `json:"trainer_type"`
 	ImageUrl    string    `json:"image_url"`
 	Description string    `json:"description"`
+	Regulation  string    `json:"regulation"`
+	Expansion   string    `json:"expansion"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

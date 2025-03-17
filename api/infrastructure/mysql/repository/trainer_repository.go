@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"api/domain/inventory/trainer"
+	"api/domain/trainer"
 	"api/infrastructure/mysql/db"
 	"api/infrastructure/mysql/db/dbgen"
 	"context"
@@ -26,26 +26,4 @@ func (r *trainerRepository) Save(ctx context.Context, trainer *trainer.Trainer, 
 		return err
 	}
 	return nil
-}
-
-func (r *trainerRepository) FindById(ctx context.Context, trainerId int) (*trainer.Trainer, error) {
-	query := db.GetQuery(ctx)
-
-	t, err := query.TrainerFindById(ctx, int64(trainerId))
-	if err != nil {
-		return nil, err
-	}
-
-	td, err := trainer.NewTrainer(
-		int(t.ID),
-		t.Name,
-		t.TrainerType,
-		t.Description,
-		t.ImageUrl,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return td, nil
 }

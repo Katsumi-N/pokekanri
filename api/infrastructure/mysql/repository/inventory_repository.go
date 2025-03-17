@@ -4,8 +4,8 @@ import (
 	"api/domain"
 	errDomain "api/domain/error"
 	"api/domain/inventory"
-	"api/domain/inventory/pokemon"
-	"api/domain/inventory/trainer"
+	"api/domain/pokemon"
+	"api/domain/trainer"
 	"api/infrastructure/mysql/db"
 	"api/infrastructure/mysql/db/dbgen"
 	"context"
@@ -68,8 +68,12 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 			card.Name.String,
 			card.EnergyType.String,
 			int(card.Hp.Int64),
-			card.Description.String,
+			card.Ability.String,
+			card.AbilityDescription.String,
 			card.ImageUrl.String,
+			card.Regulation.String,
+			card.Expansion.String,
+			nil, // TODO: pokemon_attacksを取得するかは要検討
 		)
 		if err != nil {
 			return nil, err
@@ -86,6 +90,8 @@ func (r *inventoryRepository) FindCardFromInventory(ctx context.Context, userId 
 			card.TrainerType.String,
 			card.Description.String,
 			card.ImageUrl.String,
+			card.Regulation.String,
+			card.Expansion.String,
 		)
 		if err != nil {
 			return nil, err
