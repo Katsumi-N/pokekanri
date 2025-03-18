@@ -21,7 +21,7 @@ func DownloadImageFromPokemon(downloadPath string) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name, image_url FROM pokemons")
+	rows, err := db.Query("SELECT id, name, image_url, regulation FROM pokemons")
 	if err != nil {
 		log.Fatalf("Error querying database: %s", err)
 	}
@@ -29,12 +29,13 @@ func DownloadImageFromPokemon(downloadPath string) {
 
 	for rows.Next() {
 		var pokemon Pokemon
-		if err := rows.Scan(&pokemon.ID, &pokemon.Name, &pokemon.ImageURL); err != nil {
+		if err := rows.Scan(&pokemon.ID, &pokemon.Name, &pokemon.ImageURL, &pokemon.Regulation); err != nil {
 			log.Fatalf("Error scanning row: %s", err)
 		}
 
 		fileName := extractFileName(pokemon.ImageURL)
-		if err := downloadImage(pokemon.ImageURL, filepath.Join(downloadPath, fileName)); err != nil {
+		imageUrl := fmt.Sprintf("https://www.pokemon-card.com/assets/images/card_images/large/%s/%s", pokemon.Regulation, pokemon.ImageURL)
+		if err := downloadImage(imageUrl, filepath.Join(downloadPath, fileName)); err != nil {
 			log.Printf("Error downloading image for %s: %s", pokemon.Name, err)
 		} else {
 			log.Printf("Downloaded image for %s", pokemon.Name)

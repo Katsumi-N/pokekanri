@@ -31,7 +31,7 @@ func EnergySeeder() {
 	}
 	defer sqlFile.Close()
 
-	insertStmt := "INSERT INTO energies (id, name, image_url, description) VALUES "
+	insertStmt := "INSERT INTO energies (id, name, image_url, description, regulation, expansion) VALUES "
 	values := []string{}
 	for i, record := range records {
 		// ヘッダー行をスキップ
@@ -43,8 +43,10 @@ func EnergySeeder() {
 		name := record[1]
 		imageUrl := extractFileName(record[2])
 		description := record[3]
+		expansion := record[4]
+		regulation := record[5]
 
-		value := fmt.Sprintf("('%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(imageUrl), escapeString(description))
+		value := fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(imageUrl), escapeString(description), escapeString(regulation), escapeString(expansion))
 		values = append(values, value)
 	}
 

@@ -16,17 +16,16 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Trainer struct {
+type Energy struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
-	TrainerType string `json:"trainer_type"`
 	ImageURL    string `json:"image_url"`
 	Description string `json:"description"`
 	Regulation  string `json:"regulation"`
 	Expansion   string `json:"expansion"`
 }
 
-func FeedTrainer() {
+func FeedEnergy() {
 	dsn := "root:pass@tcp(localhost:13306)/pokekanridb"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -45,7 +44,7 @@ func FeedTrainer() {
 
 	// インデックスが存在するか確認
 	existsReq := esapi.IndicesExistsRequest{
-		Index: []string{"trainers"},
+		Index: []string{"energies"},
 	}
 	existsRes, err := existsReq.Do(context.Background(), es)
 	if err != nil {
@@ -54,16 +53,16 @@ func FeedTrainer() {
 
 	// インデックスが存在しない場合は作成
 	if existsRes.StatusCode == 404 {
-		// trainer_index.jsonからマッピング設定を読み込む
-		indexFile, err := os.Open("batch/trainer_index.json")
+		// energy_index.jsonからマッピング設定を読み込む
+		indexFile, err := os.Open("batch/energy_index.json")
 		if err != nil {
-			log.Fatalf("Error opening trainer_index.json: %s", err)
+			log.Fatalf("Error opening energy_index.json: %s", err)
 		}
 		defer indexFile.Close()
 
 		indexBytes, err := ioutil.ReadAll(indexFile)
 		if err != nil {
-			log.Fatalf("Error reading trainer_index.json: %s", err)
+			log.Fatalf("Error reading energy_index.json: %s", err)
 		}
 
 		// PUTコマンドと空行を取り除く
@@ -71,7 +70,7 @@ func FeedTrainer() {
 
 		// インデックス作成
 		createReq := esapi.IndicesCreateRequest{
-			Index: "trainers",
+			Index: "energies",
 			Body:  strings.NewReader(indexJson),
 		}
 		createRes, err := createReq.Do(context.Background(), es)
@@ -84,7 +83,7 @@ func FeedTrainer() {
 		log.Printf("Index created successfully")
 	}
 
-	rows, err := db.Query("SELECT id, name, trainer_type, image_url, description, regulation, expansion FROM trainers")
+	rows, err := db.Query("SELECT id, name, image_url, description, regulation, expansion FROM energies")
 	if err != nil {
 		log.Fatalf("Error querying database: %s", err)
 	}
@@ -92,18 +91,17 @@ func FeedTrainer() {
 
 	var buf bytes.Buffer
 	for rows.Next() {
-		var trainer Trainer
+		var energy Energy
 		if err := rows.Scan(
-			&trainer.ID, &trainer.Name, &trainer.TrainerType, &trainer.ImageURL,
-			&trainer.Description, &trainer.Regulation, &trainer.Expansion,
-		); err != nil {
+			&energy.ID, &energy.Name, &energy.ImageURL, &energy.Description,
+			&energy.Regulation, &energy.Expansion); err != nil {
 			log.Fatalf("Error scanning row: %s", err)
 		}
 
-		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "trainers", "_id" : "%d" } }%s`, trainer.ID, "\n"))
-		data, err := json.Marshal(trainer)
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "energies", "_id" : "%d" } }%s`, energy.ID, "\n"))
+		data, err := json.Marshal(energy)
 		if err != nil {
-			log.Fatalf("Error marshaling trainer to JSON: %s", err)
+			log.Fatalf("Error marshaling energy to JSON: %s", err)
 		}
 
 		data = append(data, "\n"...)
