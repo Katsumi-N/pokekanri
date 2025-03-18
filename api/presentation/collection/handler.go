@@ -1,18 +1,19 @@
 package collection
 
 import (
-	"api/application/collection"
+	applicationCollection "api/application/collection"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/samber/lo"
 )
 
 type collectionHandler struct {
-	FetchCollectionUseCase *collection.FetchCollectionUseCase
+	FetchCollectionUseCase *applicationCollection.FetchCollectionUseCase
 }
 
-func NewCollectionHandler(fetchCollectionUseCase *collection.FetchCollectionUseCase) *collectionHandler {
+func NewCollectionHandler(fetchCollectionUseCase *applicationCollection.FetchCollectionUseCase) *collectionHandler {
 	return &collectionHandler{
 		FetchCollectionUseCase: fetchCollectionUseCase,
 	}
@@ -46,40 +47,34 @@ func (h *collectionHandler) FetchCollection(c echo.Context) error {
 	}
 
 	res := fetchCollectionReponse{
-		Result:   true,
-		Pokemons: []Card{},
-		Trainers: []Card{},
-		Energies: []Card{},
-	}
-
-	for _, p := range collection.Pokemons {
-		res.Pokemons = append(res.Pokemons, Card{
-			InventoryId: p.Id,
-			CardId:      p.CardId,
-			CardName:    p.CardName,
-			ImageUrl:    p.ImageUrl,
-			Quantity:    p.Quantity,
-		})
-	}
-
-	for _, t := range collection.Trainers {
-		res.Trainers = append(res.Trainers, Card{
-			InventoryId: t.Id,
-			CardId:      t.CardId,
-			CardName:    t.CardName,
-			ImageUrl:    t.ImageUrl,
-			Quantity:    t.Quantity,
-		})
-	}
-
-	for _, e := range collection.Energies {
-		res.Energies = append(res.Energies, Card{
-			InventoryId: e.Id,
-			CardId:      e.CardId,
-			CardName:    e.CardName,
-			ImageUrl:    e.ImageUrl,
-			Quantity:    e.Quantity,
-		})
+		Result: true,
+		Pokemons: lo.Map(collection.Pokemons, func(p *applicationCollection.CollectionDto, _ int) Card {
+			return Card{
+				InventoryId: p.Id,
+				CardId:      p.CardId,
+				CardName:    p.CardName,
+				ImageUrl:    p.ImageUrl,
+				Quantity:    p.Quantity,
+			}
+		}),
+		Trainers: lo.Map(collection.Trainers, func(t *applicationCollection.CollectionDto, _ int) Card {
+			return Card{
+				InventoryId: t.Id,
+				CardId:      t.CardId,
+				CardName:    t.CardName,
+				ImageUrl:    t.ImageUrl,
+				Quantity:    t.Quantity,
+			}
+		}),
+		Energies: lo.Map(collection.Energies, func(e *applicationCollection.CollectionDto, _ int) Card {
+			return Card{
+				InventoryId: e.Id,
+				CardId:      e.CardId,
+				CardName:    e.CardName,
+				ImageUrl:    e.ImageUrl,
+				Quantity:    e.Quantity,
+			}
+		}),
 	}
 
 	return c.JSON(http.StatusOK, res)

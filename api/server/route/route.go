@@ -47,9 +47,11 @@ func InitRoute(e *echo.Echo) {
 func cardSearchRoute(g *echo.Group) {
 	pokemonRepository := elasticQueryService.NewPokemonQueryService()
 	trainerRepository := elasticQueryService.NewTrainerQueryService()
+	energyRepository := elasticQueryService.NewEnergyQueryService()
 	searchRepository := search.NewSearchPokemonAndTrainerUseCase(
 		pokemonRepository,
 		trainerRepository,
+		energyRepository,
 	)
 	h := searchPre.NewSearchHandler(searchRepository)
 

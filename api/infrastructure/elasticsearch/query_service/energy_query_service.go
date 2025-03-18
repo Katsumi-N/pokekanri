@@ -1,7 +1,7 @@
 package query_service
 
 import (
-	"api/application/search/trainer"
+	"api/application/search/energy"
 	"api/config"
 	"api/infrastructure/elasticsearch/query_service/util"
 	"context"
@@ -15,11 +15,10 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
 
-// Elasticsearchから返されるTrainerのJSON構造体
-type TrainerESResponse struct {
+// Elasticsearchから返されるEnergyのJSON構造体
+type EnergyESResponse struct {
 	ID          int       `json:"id"`
 	Name        string    `json:"name"`
-	TrainerType string    `json:"trainer_type"`
 	ImageURL    string    `json:"image_url"`
 	Description string    `json:"description"`
 	Regulation  string    `json:"regulation"`
@@ -28,13 +27,13 @@ type TrainerESResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type trainerQueryService struct{}
+type energyQueryService struct{}
 
-func NewTrainerQueryService() trainer.TrainerQueryService {
-	return &trainerQueryService{}
+func NewEnergyQueryService() energy.EnergyQueryService {
+	return &energyQueryService{}
 }
 
-func (s *trainerQueryService) SearchTrainerList(ctx context.Context, q string) ([]*trainer.SearchTrainerList, error) {
+func (s *energyQueryService) SearchEnergyList(ctx context.Context, q string) ([]*energy.SearchEnergyList, error) {
 	cnf := config.GetConfig()
 	esUrl := fmt.Sprintf("%s://%s:%s", cnf.ESConfig.EsProtocol, cnf.ESConfig.EsHost, cnf.ESConfig.EsPort)
 	es, err := elasticsearch.NewTypedClient(elasticsearch.Config{
@@ -67,29 +66,29 @@ func (s *trainerQueryService) SearchTrainerList(ctx context.Context, q string) (
 			},
 		},
 	}
-	res, err := es.Search().Index("trainers").Request(req).Do(ctx)
+	res, err := es.Search().Index("energies").Request(req).Do(ctx)
 	if err != nil {
 		log.Println("error searching elasticsearch: ", err)
 		return nil, err
 	}
 
-	var searchTrainerList []*trainer.SearchTrainerList
+	var searchEnergyList []*energy.SearchEnergyList
 	for _, hit := range res.Hits.Hits {
-		var esResponse TrainerESResponse
+		var esResponse EnergyESResponse
 		if err := json.Unmarshal(hit.Source_, &esResponse); err != nil {
 			log.Println("error unmarshalling hit source: ", err)
 			return nil, err
 		}
 
-		// TrainerESResponseからSearchTrainerListへの変換
-		searchTrainer := &trainer.SearchTrainerList{
+		// EnergyESResponseからSearchEnergyListへの変換
+		searchEnergy := &energy.SearchEnergyList{
 			ID:          esResponse.ID,
 			Name:        esResponse.Name,
-			TrainerType: esResponse.TrainerType,
 			ImageURL:    esResponse.ImageURL,
+			Description: esResponse.Description,
 		}
-		searchTrainerList = append(searchTrainerList, searchTrainer)
+		searchEnergyList = append(searchEnergyList, searchEnergy)
 	}
 
-	return searchTrainerList, nil
+	return searchEnergyList, nil
 }
