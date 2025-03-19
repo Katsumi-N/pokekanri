@@ -1,4 +1,3 @@
-PUT /pokemons
 {
   "settings": {
     "analysis": {

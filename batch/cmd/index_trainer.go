@@ -55,7 +55,7 @@ func FeedTrainer() {
 	// インデックスが存在しない場合は作成
 	if existsRes.StatusCode == 404 {
 		// trainer_index.jsonからマッピング設定を読み込む
-		indexFile, err := os.Open("batch/trainer_index.json")
+		indexFile, err := os.Open("../batch/trainer_index.json")
 		if err != nil {
 			log.Fatalf("Error opening trainer_index.json: %s", err)
 		}
@@ -66,8 +66,7 @@ func FeedTrainer() {
 			log.Fatalf("Error reading trainer_index.json: %s", err)
 		}
 
-		// PUTコマンドと空行を取り除く
-		indexJson := strings.Join(strings.Split(string(indexBytes), "\n")[1:], "\n")
+		indexJson := strings.Join(strings.Split(string(indexBytes), "\n"), "\n")
 
 		// インデックス作成
 		createReq := esapi.IndicesCreateRequest{

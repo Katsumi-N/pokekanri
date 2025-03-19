@@ -1,4 +1,3 @@
-PUT /energies
 {
   "settings": {
     "analysis": {

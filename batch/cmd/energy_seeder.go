@@ -43,8 +43,8 @@ func EnergySeeder() {
 		name := record[1]
 		imageUrl := extractFileName(record[2])
 		description := record[3]
-		expansion := record[4]
-		regulation := record[5]
+		regulation := record[4]
+		expansion := record[5]
 
 		value := fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s')", escapeString(id), escapeString(name), escapeString(imageUrl), escapeString(description), escapeString(regulation), escapeString(expansion))
 		values = append(values, value)

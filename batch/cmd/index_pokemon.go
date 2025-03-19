@@ -66,7 +66,7 @@ func FeedPokemon() {
 	// インデックスが存在しない場合は作成
 	if existsRes.StatusCode == 404 {
 		// pokemon_index.jsonからマッピング設定を読み込む
-		indexFile, err := os.Open("batch/pokemon_index.json")
+		indexFile, err := os.Open("../batch/pokemon_index.json")
 		if err != nil {
 			log.Fatalf("Error opening pokemon_index.json: %s", err)
 		}
@@ -77,8 +77,7 @@ func FeedPokemon() {
 			log.Fatalf("Error reading pokemon_index.json: %s", err)
 		}
 
-		// PUTコマンドと空行を取り除く
-		indexJson := strings.Join(strings.Split(string(indexBytes), "\n")[1:], "\n")
+		indexJson := strings.Join(strings.Split(string(indexBytes), "\n"), "\n")
 
 		// インデックス作成
 		createReq := esapi.IndicesCreateRequest{
