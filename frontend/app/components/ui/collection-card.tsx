@@ -24,18 +24,29 @@ const fetchUserCollections = async (): Promise<CardInventoryInfo[] | null> => {
   const data = await response.json();
   const cards: CardInventoryInfo[] = [
     ...(data.pokemons?.map((pokemon: any) => ({
-      id: pokemon.id,
-      name: pokemon.name,
-      type: pokemon.energy_type,
+      id: pokemon.card_id,
+      name: pokemon.card_name,
+      energy_type: pokemon.energy_type,
+      category: "pokemon",
       image_url: pokemon.image_url,
       hp: pokemon.hp,
       quantity: pokemon.quantity
     })) || []),
     ...(data.trainers?.map((trainer: any) => ({
-      id: trainer.id,
-      name: trainer.name,
+      id: trainer.card_id,
+      name: trainer.card_name,
+      category: "trainer",
+      energy_type: "",
       image_url: trainer.image_url,
       quantity: trainer.quantity
+    })) || []),
+    ...(data.energies?.map((energy: any) => ({
+      id: energy.card_id,
+      name: energy.card_name,
+      category: "energy",
+      energy_type: "",
+      image_url: energy.image_url,
+      quantity: energy.quantity
     })) || []),
   ];
 
@@ -56,6 +67,8 @@ export default async function UserCollections() {
           key={card.id}
           imageUrl={card.image_url}
           quantity={card.quantity}
+          cardId={card.id}
+          cardType={card.category}
         />
       ))}
     </div>

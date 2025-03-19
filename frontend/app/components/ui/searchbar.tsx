@@ -58,8 +58,8 @@ export default function Searchbar({ placeholder }: { placeholder: string }) {
           ポケモン
         </Button>
         <Button
-          variant={cardType === 'trainers' ? 'default' : 'secondary'}
-          onClick={() => handleCardTypeChange('trainers')}
+          variant={cardType === 'trainer' ? 'default' : 'secondary'}
+          onClick={() => handleCardTypeChange('trainer')}
         >
           トレーナーズ
         </Button>
