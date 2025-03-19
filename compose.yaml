@@ -27,6 +27,7 @@ services:
       memlock:
         soft: -1
         hard: -1
+    platform: linux/amd64
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
