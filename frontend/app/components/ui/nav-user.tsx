@@ -99,7 +99,7 @@ export function NavUser({ email, avatar, username }: UserInfo) {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push('/home/profile')}>
                 <BadgeCheck className="mr-2 h-4 w-4" />
-                プロファイル設定
+                Setting
               </DropdownMenuItem>
             </DropdownMenuGroup>
             {isLogin && (<>

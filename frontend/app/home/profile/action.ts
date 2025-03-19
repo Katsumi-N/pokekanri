@@ -31,16 +31,16 @@ export async function updateProfile(formData: FormData) {
       if (oldProfile?.avatar_url && oldProfile.avatar_url !== 'no-image') {
         const oldPath = oldProfile.avatar_url.split('/').pop();
         if (oldPath) {
-          await supabase.storage.from('avatars').remove([oldPath]);
+          await supabase.storage.from('profile').remove([oldPath]);
         }
       }
       
       // 新しいアバター画像のアップロード
       const fileExt = avatarFile.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from('profile')
         .upload(fileName, avatarFile);
         
       if (uploadError) {
@@ -49,7 +49,7 @@ export async function updateProfile(formData: FormData) {
       
       // 公開URLの取得
       const { data: publicUrl } = supabase.storage
-        .from('avatars')
+        .from('profile')
         .getPublicUrl(fileName);
         
       avatarUrl = publicUrl.publicUrl;
