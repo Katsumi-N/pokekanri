@@ -2,16 +2,39 @@ package query_service
 
 import (
 	"api/application/search/pokemon"
+	"api/config"
+	"api/infrastructure/elasticsearch/query_service/util"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
-	"strings"
-	"unicode"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
+
+// Elasticsearchから返されるPokemonのJSON構造体
+type PokemonESResponse struct {
+	ID                 int             `json:"id"`
+	Name               string          `json:"name"`
+	EnergyType         string          `json:"energy_type"`
+	ImageURL           string          `json:"image_url"`
+	HP                 int             `json:"hp"`
+	Ability            *string         `json:"ability"`
+	AbilityDescription *string         `json:"ability_description"`
+	Regulation         string          `json:"regulation"`
+	Expansion          string          `json:"expansion"`
+	Attacks            []PokemonAttack `json:"attacks"`
+}
+
+type PokemonAttack struct {
+	ID             int     `json:"id"`
+	Name           string  `json:"name"`
+	RequiredEnergy string  `json:"required_energy"`
+	Damage         *string `json:"damage"`
+	Description    *string `json:"description"`
+}
 
 type pokemonQueryService struct{}
 
@@ -20,9 +43,11 @@ func NewPokemonQueryService() pokemon.PokemonQueryService {
 }
 
 func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) ([]*pokemon.SearchPokemonList, error) {
+	cnf := config.GetConfig()
+	esUrl := fmt.Sprintf("%s://%s:%s", cnf.ESConfig.EsProtocol, cnf.ESConfig.EsHost, cnf.ESConfig.EsPort)
 	es, err := elasticsearch.NewTypedClient(elasticsearch.Config{
 		Addresses: []string{
-			"http://localhost:19200",
+			esUrl,
 		},
 	})
 	if err != nil {
@@ -30,22 +55,45 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 		return nil, err
 	}
 
-	q = hiraganaToKatakana(q)
+	q = util.HiraganaToKatakana(q)
 
+	// クエリの構築
 	req := &search.Request{
 		Query: &types.Query{
 			Bool: &types.BoolQuery{
-				Must: []types.Query{
+				Should: []types.Query{
 					{
 						Match: map[string]types.MatchQuery{
-							"name.ngram": {Query: q},
+							"name": {Query: q, Boost: util.Float32Ptr(3.0)},
+						},
+					},
+					{
+						Nested: &types.NestedQuery{
+							Path: "attacks",
+							Query: &types.Query{
+								Match: map[string]types.MatchQuery{
+									"attacks.name": {Query: q, Boost: util.Float32Ptr(2.0)},
+								},
+							},
+						},
+					},
+					{
+						Nested: &types.NestedQuery{
+							Path: "attacks",
+							Query: &types.Query{
+								Match: map[string]types.MatchQuery{
+									"attacks.description": {Query: q},
+								},
+							},
 						},
 					},
 				},
+				MinimumShouldMatch: util.StringPtr("1"),
 			},
 		},
 	}
-	res, err := es.Search().Index("pokemon").Request(req).Do(ctx)
+
+	res, err := es.Search().Index("pokemons").Request(req).Do(ctx)
 	if err != nil {
 		log.Println("error searching elasticsearch: ", err)
 		return nil, err
@@ -53,25 +101,41 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 
 	var searchPokemonList []*pokemon.SearchPokemonList
 	for _, hit := range res.Hits.Hits {
-		var p *pokemon.SearchPokemonList
-		if err := json.Unmarshal(hit.Source_, &p); err != nil {
+		var esResponse PokemonESResponse
+		if err := json.Unmarshal(hit.Source_, &esResponse); err != nil {
 			log.Println("error unmarshalling hit source: ", err)
 			return nil, err
 		}
-		searchPokemonList = append(searchPokemonList, p)
+
+		// PokemonESResponseからSearchPokemonListへの変換
+		attackResults := make([]pokemon.PokemonAttackResult, 0, len(esResponse.Attacks))
+		for _, attack := range esResponse.Attacks {
+			damage := ""
+			description := ""
+			if attack.Damage != nil {
+				damage = *attack.Damage
+			}
+			if attack.Description != nil {
+				description = *attack.Description
+			}
+			attackResults = append(attackResults, pokemon.PokemonAttackResult{
+				Name:           attack.Name,
+				RequiredEnergy: attack.RequiredEnergy,
+				Damage:         damage,
+				Description:    description,
+			})
+		}
+
+		searchPokemon := &pokemon.SearchPokemonList{
+			ID:         esResponse.ID,
+			Name:       esResponse.Name,
+			EnergyType: esResponse.EnergyType,
+			Hp:         esResponse.HP,
+			ImageURL:   esResponse.ImageURL,
+			Attacks:    attackResults,
+		}
+		searchPokemonList = append(searchPokemonList, searchPokemon)
 	}
 
 	return searchPokemonList, nil
-}
-
-func hiraganaToKatakana(input string) string {
-	var result strings.Builder
-	for _, r := range input {
-		if unicode.In(r, unicode.Hiragana) {
-			result.WriteRune(r + 0x60)
-		} else {
-			result.WriteRune(r)
-		}
-	}
-	return result.String()
 }

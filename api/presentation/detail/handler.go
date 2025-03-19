@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/samber/lo"
 )
 
 type detailHandler struct {
@@ -46,10 +47,10 @@ func (h *detailHandler) FetchDetail(c echo.Context) error {
 			}
 			return c.JSON(500, err.Error())
 		}
-		var attacks []PokemonAttack
-		for _, attack := range pokemon.Attacks {
-			attacks = append(attacks, PokemonAttack(attack))
-		}
+
+		attacks := lo.Map(pokemon.Attacks, func(attack detail.PokemonAttack, _ int) PokemonAttack {
+			return PokemonAttack(attack)
+		})
 
 		return c.JSON(200, PokemonCardResponse{
 			Result: true,

@@ -15,6 +15,7 @@ type Config struct {
 	DB             DBConfig
 	JWT            JWT
 	FrontendConfig FrontendConfig
+	ESConfig       ESConfig
 }
 
 type DBConfig struct {
@@ -36,6 +37,12 @@ type JWT struct {
 
 type FrontendConfig struct {
 	BaseUrl string `envconfig:"FRONTEND_BASE_URL"`
+}
+
+type ESConfig struct {
+	EsHost     string `envconfig:"ES_HOST"`
+	EsPort     string `envconfig:"ES_PORT"`
+	EsProtocol string `envconfig:"ES_PROTOCOL"`
 }
 
 var (

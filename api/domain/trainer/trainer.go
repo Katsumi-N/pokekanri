@@ -1,6 +1,10 @@
 package trainer
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/samber/lo"
+)
 
 type Trainer struct {
 	id          int
@@ -19,6 +23,8 @@ const (
 	PokemonsItem = "ポケモンのどうぐ"
 )
 
+var validTrainerTypes = []string{Supporter, Stadium, Item, PokemonsItem}
+
 func NewTrainer(id int, name string, trainerType string, description string, imageUrl string, regulation string, expansion string) (*Trainer, error) {
 	if !isValidTrainerType(trainerType) {
 		return nil, errors.New("Trainer type must be supporter, stadium or item")
@@ -36,10 +42,7 @@ func NewTrainer(id int, name string, trainerType string, description string, ima
 }
 
 func isValidTrainerType(trainerType string) bool {
-	if trainerType != Supporter && trainerType != Stadium && trainerType != Item && trainerType != PokemonsItem {
-		return false
-	}
-	return true
+	return lo.Contains(validTrainerTypes, trainerType)
 }
 
 func (t *Trainer) GetId() int {

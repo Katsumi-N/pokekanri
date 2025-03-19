@@ -2,6 +2,8 @@ package pokemon
 
 import (
 	"errors"
+
+	"github.com/samber/lo"
 )
 
 type Pokemon struct {
@@ -72,12 +74,7 @@ func NewPokemon(id int, name string, energyType string, hp int, ability string, 
 }
 
 func isValidEnergyType(energyType string) bool {
-	for _, validType := range validEnergyTypes {
-		if energyType == validType {
-			return true
-		}
-	}
-	return false
+	return lo.Contains(validEnergyTypes, energyType)
 }
 
 func (p *Pokemon) GetId() int {

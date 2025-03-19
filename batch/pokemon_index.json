@@ -1,0 +1,53 @@
+PUT /pokemons
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "kuromoji_analyzer": {
+          "type": "custom",
+          "tokenizer": "kuromoji_tokenizer",
+          "filter": [
+            "kuromoji_baseform",
+            "kuromoji_part_of_speech",
+            "cjk_width",
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": { "type": "long" },
+      "name": { 
+        "type": "text",
+        "analyzer": "kuromoji_analyzer",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "energy_type": { "type": "keyword" },
+      "image_url": { "type": "keyword" },
+      "hp": { "type": "long" },
+      "ability": { "type": "text" },
+      "ability_description": { "type": "text" },
+      "regulation": { "type": "keyword" },
+      "expansion": { "type": "keyword" },
+      "created_at": { "type": "date" },
+      "updated_at": { "type": "date" },
+      "attacks": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "long" },
+          "name": { "type": "text" },
+          "required_energy": { "type": "keyword" },
+          "damage": { "type": "keyword" },
+          "description": { "type": "text" },
+          "created_at": { "type": "date" },
+          "updated_at": { "type": "date" }
+        }
+      }
+    }
+  }
+}

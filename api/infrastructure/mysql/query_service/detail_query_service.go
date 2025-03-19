@@ -4,9 +4,12 @@ import (
 	"api/application/detail"
 	errDomain "api/domain/error"
 	"api/infrastructure/mysql/db"
+	"api/infrastructure/mysql/db/dbgen"
 	"context"
 	"database/sql"
 	"log"
+
+	"github.com/samber/lo"
 )
 
 // type DetailQueryService interface {
@@ -38,15 +41,14 @@ func (s *detailQueryService) FindPokemonDetail(ctx context.Context, pokemonId in
 		return nil, err
 	}
 
-	pokemonAttacks := make([]detail.PokemonAttack, 0)
-	for _, a := range pa {
-		pokemonAttacks = append(pokemonAttacks, detail.PokemonAttack{
+	pokemonAttacks := lo.Map(pa, func(a dbgen.PokemonAttack, _ int) detail.PokemonAttack {
+		return detail.PokemonAttack{
 			Name:           a.Name,
 			RequiredEnergy: a.RequiredEnergy,
 			Damage:         a.Damage.String,
 			Description:    a.Description.String,
-		})
-	}
+		}
+	})
 
 	pd := detail.Pokemon{
 		Id:                 int(p.ID),

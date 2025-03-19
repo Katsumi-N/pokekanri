@@ -32,6 +32,8 @@ func (h *searchHandler) SearchCardList(c echo.Context) error {
 			return h.searchCardUseCase.SearchPokemonList(c.Request().Context(), q)
 		case domain.Trainer:
 			return h.searchCardUseCase.SearchTrainerList(c.Request().Context(), q)
+		case domain.Energy:
+			return h.searchCardUseCase.SearchEnergyList(c.Request().Context(), q)
 		default:
 			return h.searchCardUseCase.SearchPokemonAndTrainerList(c.Request().Context(), q)
 		}
@@ -58,6 +60,15 @@ func (h *searchHandler) SearchCardList(c echo.Context) error {
 			Name:        dtoTrainer.Name,
 			TrainerType: dtoTrainer.TrainerType,
 			ImageURL:    dtoTrainer.ImageURL,
+		})
+	}
+
+	for _, dtoEnergy := range dto.Energies {
+		res.Energies = append(res.Energies, &energy{
+			ID:          dtoEnergy.ID,
+			Name:        dtoEnergy.Name,
+			Description: dtoEnergy.Description,
+			ImageURL:    dtoEnergy.ImageURL,
 		})
 	}
 
