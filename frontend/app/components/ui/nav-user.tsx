@@ -97,9 +97,9 @@ export function NavUser({ email, avatar, username }: UserInfo) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem onClick={() => router.push('/home/profile')}>
+                <BadgeCheck className="mr-2 h-4 w-4" />
+                プロファイル設定
               </DropdownMenuItem>
             </DropdownMenuGroup>
             {isLogin && (<>
