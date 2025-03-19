@@ -1,4 +1,3 @@
-PUT /trainers
 {
   "settings": {
     "analysis": {
