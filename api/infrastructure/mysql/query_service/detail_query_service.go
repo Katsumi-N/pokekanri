@@ -34,6 +34,7 @@ func (s *detailQueryService) FindPokemonDetail(ctx context.Context, pokemonId in
 		log.Printf("error in PokemonFindById err: %v", err)
 		return nil, err
 	}
+	log.Println("p: ", p)
 
 	pa, err := query.PokemonAttackFindByPokemonId(ctx, int64(pokemonId))
 	if err != nil {
@@ -62,6 +63,8 @@ func (s *detailQueryService) FindPokemonDetail(ctx context.Context, pokemonId in
 		Expansion:          p.Expansion,
 		Attacks:            pokemonAttacks,
 	}
+
+	log.Println("ppda: ", pd)
 
 	return &pd, nil
 }

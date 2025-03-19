@@ -106,6 +106,7 @@ func (uc *SearchPokemonAndTrainerUseCase) SearchPokemonList(ctx context.Context,
 	dto := &SearchPokemonAndTrainerUseCaseDto{
 		Pokemons: pokemons,
 		Trainers: make([]*trainer.SearchTrainerUseCaseDto, 0),
+		Energies: make([]*energy.SearchEnergyUseCaseDto, 0),
 	}
 
 	return dto, nil

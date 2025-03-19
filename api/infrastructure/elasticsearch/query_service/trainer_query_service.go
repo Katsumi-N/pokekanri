@@ -13,6 +13,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 )
 
 // Elasticsearchから返されるTrainerのJSON構造体
@@ -47,24 +48,40 @@ func (s *trainerQueryService) SearchTrainerList(ctx context.Context, q string) (
 		return nil, err
 	}
 
+	// 元のクエリqと、ひらがなをカタカナに変換したクエリを両方使用
+	originalQ := q
+	katakanaQ := util.HiraganaToKatakana(q)
+
 	// クエリの構築
 	req := &search.Request{
+		Size: util.IntPtr(100),
 		Query: &types.Query{
 			Bool: &types.BoolQuery{
 				Should: []types.Query{
 					{
 						Match: map[string]types.MatchQuery{
-							"name": {Query: q, Boost: util.Float32Ptr(2.0)},
+							"name": {Query: originalQ, Boost: util.Float32Ptr(2.0)},
 						},
 					},
 					{
 						Match: map[string]types.MatchQuery{
-							"description": {Query: q},
+							"name": {Query: katakanaQ, Boost: util.Float32Ptr(2.0)},
+						},
+					},
+					{
+						Match: map[string]types.MatchQuery{
+							"description": {Query: originalQ},
 						},
 					},
 				},
 				MinimumShouldMatch: util.StringPtr("1"),
 			},
+		},
+		Sort: []types.SortCombinations{
+			types.SortOptions{
+				SortOptions: map[string]types.FieldSort{
+					"id": {Order: &sortorder.Desc},
+				}},
 		},
 	}
 	res, err := es.Search().Index("trainers").Request(req).Do(ctx)

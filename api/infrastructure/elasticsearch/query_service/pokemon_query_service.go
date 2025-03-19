@@ -12,6 +12,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 )
 
 // Elasticsearchから返されるPokemonのJSON構造体
@@ -59,6 +60,7 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 
 	// クエリの構築
 	req := &search.Request{
+		Size: util.IntPtr(100),
 		Query: &types.Query{
 			Bool: &types.BoolQuery{
 				Should: []types.Query{
@@ -67,29 +69,14 @@ func (s *pokemonQueryService) SearchPokemonList(ctx context.Context, q string) (
 							"name": {Query: q, Boost: util.Float32Ptr(3.0)},
 						},
 					},
-					{
-						Nested: &types.NestedQuery{
-							Path: "attacks",
-							Query: &types.Query{
-								Match: map[string]types.MatchQuery{
-									"attacks.name": {Query: q, Boost: util.Float32Ptr(2.0)},
-								},
-							},
-						},
-					},
-					{
-						Nested: &types.NestedQuery{
-							Path: "attacks",
-							Query: &types.Query{
-								Match: map[string]types.MatchQuery{
-									"attacks.description": {Query: q},
-								},
-							},
-						},
-					},
 				},
-				MinimumShouldMatch: util.StringPtr("1"),
 			},
+		},
+		Sort: []types.SortCombinations{
+			types.SortOptions{
+				SortOptions: map[string]types.FieldSort{
+					"id": {Order: &sortorder.Desc},
+				}},
 		},
 	}
 

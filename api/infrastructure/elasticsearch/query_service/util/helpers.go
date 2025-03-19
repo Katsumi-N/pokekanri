@@ -5,6 +5,10 @@ func Float32Ptr(v float32) *float32 {
 	return &v
 }
 
+func IntPtr(v int) *int {
+	return &v
+}
+
 // StringPtr stringのポインタを返すヘルパー関数
 func StringPtr(v string) *string {
 	return &v
