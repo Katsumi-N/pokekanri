@@ -7,11 +7,12 @@ import { CardInfo } from "@/lib/card";
 import { useDeckContext } from '@/context/DeckContext';
 import { toast } from "sonner";
 import Image from 'next/image';
+import { DeckCard } from '@/types/deck';
 
 export default function SearchForDeck() {
   const [query, setQuery] = useState('');
   const [cardType, setCardType] = useState('all');
-  const [cards, setCards] = useState<CardInfo[]>([]);
+  const [cards, setCards] = useState<DeckCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const { addCardToDeck } = useDeckContext();
@@ -30,28 +31,24 @@ export default function SearchForDeck() {
       }
       
       const data = await response.json();
-      const fetchedCards: CardInfo[] = [
+      const fetchedCards: DeckCard[] = [
         ...(data.pokemons?.map((pokemon: any) => ({
           id: pokemon.id,
           name: pokemon.name,
-          energy_type: pokemon.energy_type,
           category: 'pokemon',
           image_url: pokemon.image_url,
-          hp: pokemon.hp
         })) || []),
         ...(data.trainers?.map((trainer: any) => ({
           id: trainer.id,
           name: trainer.name,
           category: 'trainer',
           image_url: trainer.image_url,
-          energy_type: ''
         })) || []),
         ...(data.energies?.map((energy: any) => ({
           id: energy.id,
           name: energy.name,
           category: 'energy',
           image_url: energy.image_url,
-          energy_type: energy.energy_type || ''
         })) || []),
       ];
       
@@ -76,11 +73,11 @@ export default function SearchForDeck() {
     setCardType(type);
   };
 
-  const handleQuantityChange = (card: CardInfo, value: number) => {
+  const handleQuantityChange = (card: DeckCard, value: number) => {
     setQuantities(prev => ({ ...prev, [`${card.id}-${card.category}`]: value }));
   };
 
-  const handleAddToDeck = (card: CardInfo) => {
+  const handleAddToDeck = (card: DeckCard) => {
     const quantity = quantities[`${card.id}-${card.category}`] || 1;
     addCardToDeck(card, quantity);
     toast.success(`${card.name}をデッキに追加しました`);
@@ -150,17 +147,6 @@ export default function SearchForDeck() {
               />
               <div className="mb-3">
                 <h3 className="text-lg font-semibold">{card.name}</h3>
-                <p className="text-sm text-gray-600">
-                  {card.category === 'pokemon' ? (
-                    <>
-                      {card.energy_type} {card.hp ? `- HP ${card.hp}` : ""}
-                    </>
-                  ) : card.category === 'energy' ? (
-                    <>{card.energy_type}</>
-                  ) : (
-                    <>トレーナーズ</>
-                  )}
-                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">

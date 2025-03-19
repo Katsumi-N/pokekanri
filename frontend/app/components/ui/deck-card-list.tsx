@@ -6,6 +6,7 @@ import { CardInfo } from '@/lib/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
+import { DeckCard } from '@/types/deck';
 
 interface DeckCardWithDetails extends CardInfo {
   quantity: number;
@@ -13,92 +14,7 @@ interface DeckCardWithDetails extends CardInfo {
 
 export default function DeckCardList() {
   const { currentDeck, removeCardFromDeck, updateCardQuantity } = useDeckContext();
-  const [cardDetails, setCardDetails] = useState<DeckCardWithDetails[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCardDetails = async () => {
-      if (!currentDeck || currentDeck.cards.length === 0) {
-        setCardDetails([]);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // カード情報を取得するために複数のAPI呼び出しをする必要があるかもしれないが、
-        // ここでは単純化のためにすべてのカードタイプに対して同じ方法を使用
-        const details: DeckCardWithDetails[] = [];
-        const promises = currentDeck.cards.map(async (card) => {
-          try {
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/cards/${card.category}/${card.id}`
-            );
-            
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            let cardInfo: CardInfo;
-            
-            if (card.category === 'pokemon') {
-              cardInfo = {
-                id: data.id,
-                name: data.name,
-                energy_type: data.energy_type || '',
-                category: 'pokemon',
-                image_url: data.image_url,
-                hp: data.hp
-              };
-            } else if (card.category === 'trainer') {
-              cardInfo = {
-                id: data.id,
-                name: data.name,
-                energy_type: '',
-                category: 'trainer',
-                image_url: data.image_url
-              };
-            } else {
-              // エネルギー
-              cardInfo = {
-                id: data.id,
-                name: data.name,
-                energy_type: data.energy_type || '',
-                category: 'energy',
-                image_url: data.image_url
-              };
-            }
-            
-            details.push({
-              ...cardInfo,
-              quantity: card.quantity
-            });
-          } catch (error) {
-            console.error(`Failed to fetch card ${card.id} details:`, error);
-            // エラーが発生した場合はダミーデータで対応
-            details.push({
-              id: card.id,
-              name: `カード ${card.id}`,
-              energy_type: '',
-              category: card.category,
-              image_url: 'placeholder.jpg',
-              quantity: card.quantity
-            });
-          }
-        });
-        
-        await Promise.all(promises);
-        setCardDetails(details);
-      } catch (error) {
-        console.error('Failed to fetch card details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCardDetails();
-  }, [currentDeck]);
-
+  
   const handleRemoveCard = (cardId: number) => {
     removeCardFromDeck(cardId);
   };
@@ -107,11 +23,8 @@ export default function DeckCardList() {
     updateCardQuantity(cardId, quantity);
   };
 
-  if (loading) {
-    return <div className="text-center py-8">読み込み中...</div>;
-  }
 
-  if (!currentDeck || cardDetails.length === 0) {
+  if (!currentDeck) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">デッキにカードが追加されていません</p>
@@ -120,11 +33,12 @@ export default function DeckCardList() {
   }
 
   // カードタイプごとにグループ化
-  const pokemonCards = cardDetails.filter(card => card.category === 'pokemon');
-  const trainerCards = cardDetails.filter(card => card.category === 'trainer');
-  const energyCards = cardDetails.filter(card => card.category === 'energy');
+  const cards = currentDeck.cards;
+  const pokemonCards = cards.filter(card => card.category === 'pokemon');
+  const trainerCards = cards.filter(card => card.category === 'trainer');
+  const energyCards = cards.filter(card => card.category === 'energy');
 
-  const totalCards = cardDetails.reduce((sum, card) => sum + card.quantity, 0);
+  const totalCards = cards.reduce((sum, card) => sum + card.quantity, 0);
 
   return (
     <div>
@@ -166,7 +80,7 @@ export default function DeckCardList() {
     </div>
   );
 
-  function renderCardList(cards: DeckCardWithDetails[]) {
+  function renderCardList(cards: DeckCard[]) {
     return cards.map(card => (
       <div key={card.id} className="bg-white shadow-md rounded-lg p-4">
         <div className="mb-3">
@@ -180,10 +94,6 @@ export default function DeckCardList() {
             />
           )}
           <h4 className="font-semibold">{card.name}</h4>
-          <p className="text-sm text-gray-600">
-            {card.category === 'pokemon' && card.hp ? `HP: ${card.hp}` : ''}
-            {card.energy_type ? ` - ${card.energy_type}` : ''}
-          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input

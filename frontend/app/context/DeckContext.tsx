@@ -1,13 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { CardInfo } from '@/lib/card';
 import { Deck, DeckCard } from '@/types/deck';
 
 interface DeckContextType {
   currentDeck: Deck | null;
   createNewDeck: (name: string, description?: string) => void;
-  addCardToDeck: (card: CardInfo, quantity: number) => void;
+  addCardToDeck: (card: DeckCard, quantity: number) => void;
   removeCardFromDeck: (cardId: number) => void;
   updateCardQuantity: (cardId: number, quantity: number) => void;
   validateDeck: () => DeckValidationResult;
@@ -40,18 +39,18 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const addCardToDeck = (card: CardInfo, quantity: number) => {
+  const addCardToDeck = (card: DeckCard, quantity: number) => {
     if (!currentDeck) return;
 
     setCurrentDeck(prev => {
       if (!prev) return prev;
 
-      const existingCard = prev.cards.find(c => c.id === card.id && c.category === card.category);
+      const existingCard = prev.cards.find(c => c.name === card.name && c.category === card.category);
       if (existingCard) {
         return {
           ...prev,
           cards: prev.cards.map(c => 
-            c.id === card.id && c.category === card.category
+            c.name === card.name && c.category === card.category
               ? { ...c, quantity: c.quantity + quantity } 
               : c
           )
@@ -59,7 +58,7 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
       } else {
         return {
           ...prev,
-          cards: [...prev.cards, { id: card.id, category: card.category, quantity }]
+          cards: [...prev.cards, { id: card.id, name: card.name, image_url: card.image_url, category: card.category, quantity }]
         };
       }
     });
@@ -107,17 +106,12 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
       errors.push('デッキにカードが追加されていません');
     }
 
-    // ここにはバックエンドで実装予定のバリデーションルールを表示するためのダミーチェックを追加
+    // TODO: フロントエンドのバリデーションを削除してAPI側でバリデーションを行う
     const totalCards = currentDeck.cards.reduce((sum, card) => sum + card.quantity, 0);
-    if (totalCards < 40) {
-      errors.push('デッキには最低40枚のカードが必要です');
-    }
-    
-    if (totalCards > 60) {
-      errors.push('デッキは最大60枚までです');
+    if (totalCards !== 60) {
+      errors.push('デッキは60枚です');
     }
 
-    // ポケモンカードの同名カードは4枚まで（エネルギーを除く）というルールのダミーチェック
     const cardCounts: Record<string, number> = {};
     currentDeck.cards.forEach(card => {
       if (card.category !== 'energy') {

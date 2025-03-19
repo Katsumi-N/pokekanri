@@ -7,6 +7,8 @@ export interface Deck {
 
 export interface DeckCard {
   id: number;
+  name: string;
+  image_url: string;
   category: string; // pokemon, trainer, energy
   quantity: number;
 }
