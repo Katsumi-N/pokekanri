@@ -1,4 +1,4 @@
-import { Home, Search, Settings, BriefcaseBusiness } from "lucide-react"
+import { Home, Search, Settings, BriefcaseBusiness, Layers } from "lucide-react"
 import Link from "next/link"
 import {
   Sidebar,
@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/shadcn/sidebar";
 import { NavUser } from "@/components/ui/nav-user";
-import { UserInfo } from "../../../types/user_info";
+import { UserInfo } from "../../types/user_info";
 
 const items = [
   {
@@ -29,6 +29,11 @@ const items = [
     title: "Collection",
     url: "/home/collection",
     icon: BriefcaseBusiness,
+  },
+  {
+    title: "Deck Builder",
+    url: "/home/deck",
+    icon: Layers,
   }
 ]
 
