@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/ui/app-sidebar";
 import { CardProvider } from "@/context/CardContext";
 import { fetchUserInfo } from '@/utils/supabase/fetchUserInfo';
 import { HeaderBreadcrumb } from '@/components/ui/header-breadcrumb';
+import { NotificationPanel } from '@/components/ui/notification-panel'; // 追加
 
 export const experimental_ppr = true;
 
@@ -18,6 +19,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <HeaderBreadcrumb />
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationPanel />
+          </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4">
           <CardProvider>
