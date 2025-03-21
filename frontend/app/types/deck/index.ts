@@ -3,6 +3,8 @@ export interface Deck {
   name: string;
   description?: string;
   cards: DeckCard[];
+  mainCard?: DeckCard;
+  subCard?: DeckCard;
 }
 
 export interface DeckCard {

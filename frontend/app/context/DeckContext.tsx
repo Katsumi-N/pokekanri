@@ -5,12 +5,18 @@ import { Deck, DeckCard } from '@/types/deck';
 
 interface DeckContextType {
   currentDeck: Deck | null;
+  mainCard: DeckCard | null;
+  subCard: DeckCard | null;
   createNewDeck: (name: string, description?: string) => void;
   addCardToDeck: (card: DeckCard, quantity: number) => void;
   removeCardFromDeck: (cardId: number) => void;
   updateCardQuantity: (cardId: number, quantity: number) => void;
   validateDeck: () => DeckValidationResult;
   clearDeck: () => void;
+  addMainCard: (card: DeckCard) => void;
+  addSubCard: (card: DeckCard) => void;
+  removeMainCard: () => void;
+  removeSubCard: () => void;
 }
 
 export interface DeckValidationResult {
@@ -30,6 +36,8 @@ export const useDeckContext = () => {
 
 export const DeckProvider = ({ children }: { children: ReactNode }) => {
   const [currentDeck, setCurrentDeck] = useState<Deck | null>(null);
+  const [mainCard, setMainCard] = useState<DeckCard | null>(null);
+  const [subCard, setSubCard] = useState<DeckCard | null>(null);
 
   const createNewDeck = (name: string, description?: string) => {
     setCurrentDeck({
@@ -106,7 +114,6 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
       errors.push('デッキにカードが追加されていません');
     }
 
-    // TODO: フロントエンドのバリデーションを削除してAPI側でバリデーションを行う
     const totalCards = currentDeck.cards.reduce((sum, card) => sum + card.quantity, 0);
     if (totalCards !== 60) {
       errors.push('デッキは60枚です');
@@ -137,15 +144,37 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
     setCurrentDeck(null);
   };
 
+  const addMainCard = (card: DeckCard) => {
+    setMainCard(card);
+  };
+
+  const addSubCard = (card: DeckCard) => {
+    setSubCard(card);
+  };
+
+  const removeMainCard = () => {
+    setMainCard(null);
+  };
+
+  const removeSubCard = () => {
+    setSubCard(null);
+  };
+
   return (
     <DeckContext.Provider value={{ 
-      currentDeck, 
+      currentDeck,
+      mainCard,
+      subCard,
       createNewDeck, 
       addCardToDeck, 
       removeCardFromDeck, 
       updateCardQuantity, 
       validateDeck,
-      clearDeck
+      clearDeck,
+      addMainCard,
+      addSubCard,
+      removeMainCard,
+      removeSubCard
     }}>
       {children}
     </DeckContext.Provider>
