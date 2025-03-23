@@ -2,7 +2,7 @@ export interface Deck {
   id?: number;
   name: string;
   description?: string;
-  cards: DeckCard[];
+  cards: DeckCardWithQuantity[];
   mainCard?: DeckCard;
   subCard?: DeckCard;
 }
@@ -12,5 +12,8 @@ export interface DeckCard {
   name: string;
   image_url: string;
   category: string; // pokemon, trainer, energy
+}
+
+export interface DeckCardWithQuantity extends DeckCard {
   quantity: number;
 }

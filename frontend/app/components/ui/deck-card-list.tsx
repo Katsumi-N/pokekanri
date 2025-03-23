@@ -6,11 +6,7 @@ import { CardInfo } from '@/lib/card';
 import NextImage from 'next/image';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
-import { DeckCard } from '@/types/deck';
-
-interface DeckCardWithDetails extends CardInfo {
-  quantity: number;
-}
+import { DeckCard, DeckCardWithQuantity } from '@/types/deck';
 
 export default function DeckCardList() {
   const { currentDeck, mainCard, subCard, removeCardFromDeck, updateCardQuantity, addMainCard, addSubCard, removeMainCard, removeSubCard } = useDeckContext();
@@ -179,7 +175,7 @@ export default function DeckCardList() {
     </div>
   );
 
-  function renderCardList(cards: DeckCard[]) {
+  function renderCardList(cards: DeckCardWithQuantity[]) {
     return cards.map(card => (
       <div 
         key={card.id} 
