@@ -27,7 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/shadcn/sidebar"
-import { UserInfo } from "../../../types/user_info"
+import { UserInfo } from "../../types/user_info"
 import { signout } from "@/utils/supabase/signout"
 import { useRouter } from "next/navigation";
 import { checkLogin } from "@/utils/supabase/checkLogin";

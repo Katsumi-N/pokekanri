@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { UserInfo } from '../../../types/user_info';
+import { UserInfo } from '../../types/user_info';
 
 export const fetchUserInfo = async (): Promise<UserInfo> => {
   const supabase = await createClient();

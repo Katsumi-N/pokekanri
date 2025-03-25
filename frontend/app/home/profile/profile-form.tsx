@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { updateProfile } from '@/home/profile/action';
-import { UserInfo } from '../../../types/user_info';
+import { UserInfo } from '../../types/user_info';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/shadcn/avatar';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
