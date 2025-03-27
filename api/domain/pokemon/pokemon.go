@@ -1,6 +1,7 @@
 package pokemon
 
 import (
+	"api/domain"
 	"errors"
 
 	"github.com/samber/lo"
@@ -17,6 +18,7 @@ type Pokemon struct {
 	regulation         string
 	expansion          string
 	attacks            []PokemonAttack
+	acespec            bool
 }
 
 type PokemonAttack struct {
@@ -50,7 +52,10 @@ func NewPokemonAttack(name string, requiredEnergy string, damage string, descrip
 	}
 }
 
-func NewPokemon(id int, name string, energyType string, hp int, ability string, abilityDescription string, imageUrl string, regulation string, expansion string, attacks []PokemonAttack) (*Pokemon, error) {
+func NewPokemon(id int, name string, energyType string, hp int, ability string, abilityDescription string, imageUrl string, regulation string, expansion string, attacks []PokemonAttack, isAceSpec ...bool) (*Pokemon, error) {
+	// 今の所ポケモンにエーススペックはいない
+	acespec := false
+
 	if !isValidEnergyType(energyType) {
 		return nil, errors.New("energy type must be valid type")
 	}
@@ -70,6 +75,7 @@ func NewPokemon(id int, name string, energyType string, hp int, ability string, 
 		regulation:         regulation,
 		expansion:          expansion,
 		attacks:            attacks,
+		acespec:            acespec,
 	}, nil
 }
 
@@ -85,10 +91,14 @@ func (p *Pokemon) GetName() string {
 	return p.name
 }
 
-func (p *Pokemon) GetCardTypeId() int {
-	return 1
+func (p *Pokemon) GetCardType() int {
+	return int(domain.Pokemon)
 }
 
 func (p *Pokemon) GetImageUrl() string {
 	return p.imageUrl
+}
+
+func (p *Pokemon) IsAceSpec() bool {
+	return p.acespec
 }

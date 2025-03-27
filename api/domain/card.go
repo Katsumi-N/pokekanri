@@ -1,8 +1,9 @@
-package inventory
+package domain
 
 type Card interface {
 	GetId() int
 	GetName() string
-	GetCardTypeId() int
+	GetCardType() int
 	GetImageUrl() string
+	IsAceSpec() bool
 }

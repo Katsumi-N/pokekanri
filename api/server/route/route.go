@@ -2,6 +2,7 @@ package route
 
 import (
 	"api/application/collection"
+	deckUseCase "api/application/deck"
 	"api/application/detail"
 	"api/application/inventory"
 	"api/application/search"
@@ -10,6 +11,7 @@ import (
 	mysqlQueryService "api/infrastructure/mysql/query_service"
 	"api/infrastructure/mysql/repository"
 	collectionPre "api/presentation/collection"
+	deckPre "api/presentation/deck"
 	detailPre "api/presentation/detail"
 	inventoryPre "api/presentation/inventory"
 	searchPre "api/presentation/search"
@@ -42,6 +44,7 @@ func InitRoute(e *echo.Echo) {
 	cardDetailRoute(v1)
 	cardInventoryRoute(v1, jwtMiddleware)
 	cardCollectionRoute(v1, jwtMiddleware)
+	deckRoute(v1, jwtMiddleware)
 }
 
 func cardSearchRoute(g *echo.Group) {
@@ -86,4 +89,20 @@ func cardCollectionRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
 
 	group := g.Group("/cards", jwtMiddleware)
 	group.GET("/collections", h.FetchCollection)
+}
+
+func deckRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
+	deckRepository := repository.NewDeckRepository()
+	cardRepository := repository.NewCardRepository()
+
+	listDeckUseCase := deckUseCase.NewListDeckUseCase(deckRepository)
+	createDeckUseCase := deckUseCase.NewCreateDeckUseCase(deckRepository, cardRepository)
+	validateDeckUseCase := deckUseCase.NewValidateDeckUseCase(cardRepository)
+
+	deckHandler := deckPre.NewDeckHandler(listDeckUseCase, createDeckUseCase, validateDeckUseCase)
+
+	group := g.Group("/decks", jwtMiddleware)
+	group.GET("", deckHandler.GetUserDecks)
+	group.POST("/create", deckHandler.CreateDeck)
+	group.POST("/validate", deckHandler.ValidateDeck)
 }

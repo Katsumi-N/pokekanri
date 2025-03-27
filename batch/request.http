@@ -1,0 +1,39 @@
+@token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzOWJmZDBmZS1iNmZlLTQzMTQtOGYyZC1iYmQyNWU5MjI3YjMiLCJuYW1lIjoidGVzdCIsImlhdCI6MTc0MjM2MDA5OSwiZXhwIjoxODQyMzYwMDk5fQ.GUdlgA0eaRi6gY73GsoHXuYj9L_DtiY8Qx-GqFThEWw
+
+### 検索API
+http://localhost:8080/v1/cards/search?q=リザードン
+
+### カード詳細API
+http://localhost:8080/v1/cards/detail/pokemon/47122
+Authorization: Bearer {{token}}
+
+
+### デッキ作成API
+POST http://localhost:8080/v1/decks/create 
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "テストデッキ",
+    "description": "テストデッキの説明",
+    "main_card": {
+        "id": 42261,
+        "category": "pokemon"
+    },
+    "sub_card": {
+        "id": 42661,
+        "category": "pokemon"
+    },
+    "cards": [
+        {
+            "id": 42261,
+            "category": "pokemon",
+            "quantity": 4
+        },
+        {
+            "id": 46299,
+            "category": "energy",
+            "quantity": 56
+        }
+    ]
+}
