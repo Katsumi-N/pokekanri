@@ -27,7 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/shadcn/sidebar"
-import { UserInfo } from "../../../types/user_info"
+import { UserInfo } from "../../types/user_info"
 import { signout } from "@/utils/supabase/signout"
 import { useRouter } from "next/navigation";
 import { checkLogin } from "@/utils/supabase/checkLogin";
@@ -99,7 +99,7 @@ export function NavUser({ email, avatar, username }: UserInfo) {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => router.push('/home/profile')}>
                 <BadgeCheck className="mr-2 h-4 w-4" />
-                プロファイル設定
+                Setting
               </DropdownMenuItem>
             </DropdownMenuGroup>
             {isLogin && (<>

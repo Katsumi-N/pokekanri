@@ -16,6 +16,7 @@ func TestNewPokemon(t *testing.T) {
 		imageUrl           string
 		regulation         string
 		expansion          string
+		acespec            bool
 		attacks            []PokemonAttack
 		expectError        bool
 	}{

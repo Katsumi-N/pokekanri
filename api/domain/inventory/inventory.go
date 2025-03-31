@@ -1,12 +1,14 @@
 package inventory
 
+import "api/domain"
+
 type Inventory struct {
 	id       int
-	card     Card
+	card     domain.Card
 	quantity int
 }
 
-func NewInventory(id int, card Card, quantity int) *Inventory {
+func NewInventory(id int, card domain.Card, quantity int) *Inventory {
 	return &Inventory{
 		id:       id,
 		card:     card,
@@ -18,7 +20,7 @@ func (i *Inventory) GetID() int {
 	return i.id
 }
 
-func (i *Inventory) GetCard() Card {
+func (i *Inventory) GetCard() domain.Card {
 	return i.card
 }
 

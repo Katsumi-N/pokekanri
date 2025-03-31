@@ -2,6 +2,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { Separator } from '@/components/ui/shadcn/separator';
 import { Toaster } from "@/components/ui/shadcn/sonner";
 import { AppSidebar } from "@/components/ui/app-sidebar";
+import { DeckProvider } from '@/context/DeckContext';
 import { CardProvider } from "@/context/CardContext";
 import { fetchUserInfo } from '@/utils/supabase/fetchUserInfo';
 import { HeaderBreadcrumb } from '@/components/ui/header-breadcrumb';
@@ -25,7 +26,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4">
           <CardProvider>
-            {children}
+            <DeckProvider>
+              {children}
+            </DeckProvider>
           </CardProvider>
           <Toaster />
         </main>
