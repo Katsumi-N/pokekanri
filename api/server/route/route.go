@@ -98,11 +98,21 @@ func deckRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
 	listDeckUseCase := deckUseCase.NewListDeckUseCase(deckRepository)
 	createDeckUseCase := deckUseCase.NewCreateDeckUseCase(deckRepository, cardRepository)
 	validateDeckUseCase := deckUseCase.NewValidateDeckUseCase(cardRepository)
+	updateDeckUseCase := deckUseCase.NewUpdateDeckUseCase(deckRepository, cardRepository)
+	deleteDeckUseCase := deckUseCase.NewDeleteDeckUseCase(deckRepository)
 
-	deckHandler := deckPre.NewDeckHandler(listDeckUseCase, createDeckUseCase, validateDeckUseCase)
+	deckHandler := deckPre.NewDeckHandler(
+		listDeckUseCase,
+		createDeckUseCase,
+		validateDeckUseCase,
+		updateDeckUseCase,
+		deleteDeckUseCase,
+	)
 
 	group := g.Group("/decks", jwtMiddleware)
 	group.GET("", deckHandler.GetUserDecks)
 	group.POST("/create", deckHandler.CreateDeck)
 	group.POST("/validate", deckHandler.ValidateDeck)
+	group.POST("/edit/:id", deckHandler.UpdateDeck)
+	group.DELETE("/delete/:id", deckHandler.DeleteDeck)
 }

@@ -23,6 +23,5 @@ CREATE TABLE IF NOT EXISTS `deck_cards` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX `index_deck_id` (`deck_id`),
-  INDEX `index_card_id_card_type_id` (`card_id`, `card_type_id`),
-  FOREIGN KEY (`deck_id`) REFERENCES `decks` (`id`) ON DELETE CASCADE
+  INDEX `index_card_id_card_type_id` (`card_id`, `card_type_id`)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_bin; 

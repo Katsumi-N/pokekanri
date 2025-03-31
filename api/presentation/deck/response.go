@@ -18,3 +18,9 @@ type validateDeckResponse struct {
 	IsValid bool     `json:"is_valid"`
 	Errors  []string `json:"errors,omitempty"`
 }
+
+type updateDeckResponse struct {
+	Result bool        `json:"result"`
+	Deck   interface{} `json:"deck,omitempty"`
+	Error  string      `json:"error,omitempty"`
+}

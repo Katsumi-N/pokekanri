@@ -82,30 +82,16 @@ func (u *ValidateDeckUseCase) Execute(ctx context.Context, request *ValidateDeck
 		deckCards = append(deckCards, *deckCard)
 	}
 
-	// デッキの作成（バリデーション用）
-	deck, validationErrors := domainDeck.NewDeck(0, request.UserID, request.Name, request.Description, mainCard, subCard, deckCards)
-	if validationErrors != nil && len(validationErrors) > 0 {
-		// バリデーションエラーをレスポンスにマッピング
-		var errorMessages []string
-		for _, e := range validationErrors {
-			errorMessages = append(errorMessages, e.Error())
-		}
+	_, validationErrors := domainDeck.NewDeck(0, request.UserID, request.Name, request.Description, mainCard, subCard, deckCards)
 
-		return &ValidateDeckResponseDto{
-			IsValid: false,
-			Errors:  errorMessages,
-		}, nil
-	}
-
-	// バリデーションを実行
-	validationErrors = deck.Validate()
+	// エラーメッセージをレスポンス用に変換
 	var errorMessages []string
 	for _, e := range validationErrors {
 		errorMessages = append(errorMessages, e.Error())
 	}
 
 	return &ValidateDeckResponseDto{
-		IsValid: len(validationErrors) == 0,
+		IsValid: len(errorMessages) == 0,
 		Errors:  errorMessages,
 	}, nil
 }

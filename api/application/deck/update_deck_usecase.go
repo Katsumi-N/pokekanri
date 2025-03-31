@@ -5,25 +5,26 @@ import (
 	domainDeck "api/domain/deck"
 	"context"
 	"errors"
+	"fmt"
 )
 
-type ICreateDeckUseCase interface {
-	Execute(ctx context.Context, request *CreateDeckRequestDto) (*DeckDto, error)
+type IUpdateDeckUseCase interface {
+	Execute(ctx context.Context, id int, request *UpdateDeckRequestDto) (*DeckDto, error)
 }
 
-type CreateDeckUseCase struct {
+type UpdateDeckUseCase struct {
 	deckRepository domainDeck.DeckRepository
 	cardRepository domainDeck.CardRepository
 }
 
-func NewCreateDeckUseCase(deckRepository domainDeck.DeckRepository, cardRepository domainDeck.CardRepository) *CreateDeckUseCase {
-	return &CreateDeckUseCase{
+func NewUpdateDeckUseCase(deckRepository domainDeck.DeckRepository, cardRepository domainDeck.CardRepository) *UpdateDeckUseCase {
+	return &UpdateDeckUseCase{
 		deckRepository: deckRepository,
 		cardRepository: cardRepository,
 	}
 }
 
-type CreateDeckRequestDto struct {
+type UpdateDeckRequestDto struct {
 	UserID      string               `json:"user_id"`
 	Name        string               `json:"name"`
 	Description string               `json:"description"`
@@ -32,18 +33,18 @@ type CreateDeckRequestDto struct {
 	Cards       []DeckCardRequestDto `json:"cards"`
 }
 
-type CardIDDto struct {
-	Id       int    `json:"id"`
-	Category string `json:"category"`
-}
+func (u *UpdateDeckUseCase) Execute(ctx context.Context, id int, request *UpdateDeckRequestDto) (*DeckDto, error) {
+	// 既存デッキを取得
+	existingDeck, err := u.deckRepository.FindById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("デッキが見つかりません: %w", err)
+	}
 
-type DeckCardRequestDto struct {
-	Id       int    `json:"id"`
-	Category string `json:"category"`
-	Quantity int    `json:"quantity"`
-}
+	// ユーザーIDの確認（権限チェック）
+	if existingDeck.GetUserID() != request.UserID {
+		return nil, errors.New("このデッキを編集する権限がありません")
+	}
 
-func (u *CreateDeckUseCase) Execute(ctx context.Context, request *CreateDeckRequestDto) (*DeckDto, error) {
 	// カード情報の取得
 	var mainCard domain.Card
 	var subCard domain.Card
@@ -85,13 +86,12 @@ func (u *CreateDeckUseCase) Execute(ctx context.Context, request *CreateDeckRequ
 		if err != nil {
 			return nil, err
 		}
-
 		deckCard := domainDeck.NewDeckCard(card, cardRequest.Quantity)
 		deckCards = append(deckCards, *deckCard)
 	}
 
-	// デッキの作成
-	deck, errs := domainDeck.NewDeck(0, request.UserID, request.Name, request.Description, mainCard, subCard, deckCards)
+	// デッキの作成（既存IDを保持）
+	deck, errs := domainDeck.NewDeck(id, request.UserID, request.Name, request.Description, mainCard, subCard, deckCards)
 	if errs != nil {
 		errorMsg := ""
 		for _, e := range errs {
@@ -100,8 +100,13 @@ func (u *CreateDeckUseCase) Execute(ctx context.Context, request *CreateDeckRequ
 		return nil, errors.New(errorMsg)
 	}
 
-	// リポジトリに保存
-	createdDeck, err := u.deckRepository.Create(ctx, deck)
+	// リポジトリで更新
+	if err := u.deckRepository.Update(ctx, deck); err != nil {
+		return nil, err
+	}
+
+	// 更新後のデッキを再取得
+	updatedDeck, err := u.deckRepository.FindById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -111,27 +116,27 @@ func (u *CreateDeckUseCase) Execute(ctx context.Context, request *CreateDeckRequ
 	var mainCardDto *CardDto
 	var subCardDto *CardDto
 
-	if createdDeck.GetMainCard() != nil {
+	if updatedDeck.GetMainCard() != nil {
 		mainCardDto = &CardDto{
-			ID:       createdDeck.GetMainCard().GetId(),
-			Name:     createdDeck.GetMainCard().GetName(),
-			Category: getCardCategory(createdDeck.GetMainCard().GetCardType()),
-			ImageURL: createdDeck.GetMainCard().GetImageUrl(),
+			ID:       updatedDeck.GetMainCard().GetId(),
+			Name:     updatedDeck.GetMainCard().GetName(),
+			Category: getCardCategory(updatedDeck.GetMainCard().GetCardType()),
+			ImageURL: updatedDeck.GetMainCard().GetImageUrl(),
 		}
 	}
 
-	if createdDeck.GetSubCard() != nil {
+	if updatedDeck.GetSubCard() != nil {
 		subCardDto = &CardDto{
-			ID:       createdDeck.GetSubCard().GetId(),
-			Name:     createdDeck.GetSubCard().GetName(),
-			Category: getCardCategory(createdDeck.GetSubCard().GetCardType()),
-			ImageURL: createdDeck.GetSubCard().GetImageUrl(),
+			ID:       updatedDeck.GetSubCard().GetId(),
+			Name:     updatedDeck.GetSubCard().GetName(),
+			Category: getCardCategory(updatedDeck.GetSubCard().GetCardType()),
+			ImageURL: updatedDeck.GetSubCard().GetImageUrl(),
 		}
 	}
 
 	// デッキカードの変換
 	var deckCardDtos []DeckCardWithQtyDto
-	for _, c := range createdDeck.GetCards() {
+	for _, c := range updatedDeck.GetCards() {
 		deckCardDtos = append(deckCardDtos, DeckCardWithQtyDto{
 			ID:       c.GetCard().GetId(),
 			Name:     c.GetCard().GetName(),
@@ -142,25 +147,11 @@ func (u *CreateDeckUseCase) Execute(ctx context.Context, request *CreateDeckRequ
 	}
 
 	return &DeckDto{
-		ID:          createdDeck.GetId(),
-		Name:        createdDeck.GetName(),
-		Description: createdDeck.GetDescription(),
+		ID:          updatedDeck.GetId(),
+		Name:        updatedDeck.GetName(),
+		Description: updatedDeck.GetDescription(),
 		MainCard:    mainCardDto,
 		SubCard:     subCardDto,
 		Cards:       deckCardDtos,
 	}, nil
-}
-
-// カードタイプをフロントエンド用の文字列に変換
-func getCardCategory(cardType interface{}) string {
-	switch cardType {
-	case 1:
-		return "pokemon"
-	case 2:
-		return "trainer"
-	case 3:
-		return "energy"
-	default:
-		return "unknown"
-	}
 }

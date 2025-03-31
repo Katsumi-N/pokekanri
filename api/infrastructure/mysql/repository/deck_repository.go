@@ -67,9 +67,13 @@ func (r *deckRepository) Create(ctx context.Context, d *deck.Deck) (*deck.Deck, 
 		return nil, fmt.Errorf("デッキ作成エラー: %w", err)
 	}
 
+	// 作成されたデッキIDを取得
+	insertedId, _ := deckRow.LastInsertId()
+
 	// デッキカードを追加
 	for _, card := range d.GetCards() {
 		_, err = qtx.CreateDeckCard(ctx, dbgen.CreateDeckCardParams{
+			DeckID:     insertedId, // ここにデッキIDを追加
 			CardID:     int64(card.GetCard().GetId()),
 			CardTypeID: int64(card.GetCard().GetCardType()),
 			Quantity:   int32(card.GetQuantity()),
@@ -85,7 +89,6 @@ func (r *deckRepository) Create(ctx context.Context, d *deck.Deck) (*deck.Deck, 
 	}
 
 	// 作成したデッキを取得して返す
-	insertedId, _ := deckRow.LastInsertId()
 	return r.FindById(ctx, int(insertedId))
 }
 
@@ -165,22 +168,22 @@ func (r *deckRepository) FindById(ctx context.Context, id int) (*deck.Deck, erro
 		deckCards = append(deckCards, *deckCard)
 	}
 
-	// デッキオブジェクトを作成
+	// デッキオブジェクトを作成（バリデーションをスキップ）
 	description := ""
 	if deckRow.Description.Valid {
 		description = deckRow.Description.String
 	}
 
-	deckObj, errs := deck.NewDeck(int(deckRow.ID), deckRow.UserID, deckRow.Name, description, mainCard, subCard, deckCards)
-	if errs != nil {
-		errorMsg := ""
-		for _, e := range errs {
-			errorMsg += e.Error() + "; "
-		}
-		return nil, errors.New(errorMsg)
-	}
-
-	return deckObj, nil
+	// データベースから読み込むときはバリデーションをスキップ
+	return deck.NewDeckWithoutValidation(
+		int(deckRow.ID),
+		deckRow.UserID,
+		deckRow.Name,
+		description,
+		mainCard,
+		subCard,
+		deckCards,
+	), nil
 }
 
 // デッキの更新

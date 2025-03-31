@@ -27,7 +27,6 @@ type DeckValidationError struct {
 }
 
 func NewDeck(id int, userId string, name string, description string, mainCard domain.Card, subCard domain.Card, cards []DeckCard) (*Deck, []error) {
-
 	deck := &Deck{
 		id:          id,
 		userId:      userId,
@@ -44,6 +43,19 @@ func NewDeck(id int, userId string, name string, description string, mainCard do
 	}
 
 	return deck, nil
+}
+
+// NewDeckWithoutValidation creates a deck without validation, for repository use only
+func NewDeckWithoutValidation(id int, userId string, name string, description string, mainCard domain.Card, subCard domain.Card, cards []DeckCard) *Deck {
+	return &Deck{
+		id:          id,
+		userId:      userId,
+		name:        name,
+		description: description,
+		mainCard:    mainCard,
+		subCard:     subCard,
+		cards:       cards,
+	}
 }
 
 func NewDeckCard(card domain.Card, quantity int) *DeckCard {
@@ -79,6 +91,9 @@ func (d *Deck) Validate() []error {
 		})
 	}
 
+	mainCardCheck := false
+	subCardCheck := false
+
 	cardCounts := make(map[string]int)
 	for _, deckCard := range d.cards {
 		c := deckCard.card
@@ -100,6 +115,24 @@ func (d *Deck) Validate() []error {
 				Message: fmt.Sprintf("%s が5枚以上登録されています", c.GetName()),
 			})
 		}
+
+		if deckCard.card.GetId() == d.mainCard.GetId() {
+			mainCardCheck = true
+		}
+		if deckCard.card.GetId() == d.subCard.GetId() {
+			subCardCheck = true
+		}
+	}
+
+	if d.mainCard.GetId() != 0 && !mainCardCheck {
+		errors = append(errors, DeckValidationError{
+			Message: fmt.Sprintf("メインカード: %s がデッキに含まれていません", d.mainCard.GetName()),
+		})
+	}
+	if d.subCard.GetId() != 0 && !subCardCheck {
+		errors = append(errors, DeckValidationError{
+			Message: fmt.Sprintf("サブカード: %s がデッキに含まれていません", d.subCard.GetName()),
+		})
 	}
 
 	return errors
