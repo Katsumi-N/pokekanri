@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
 import DeckCardList from './deck-card-list';
 import SearchForDeck from './search-for-deck';
+import { saveDeck } from "@/actions/save-deck";
 
 export default function DeckBuilder() {
   const [deckName, setDeckName] = useState('');
@@ -23,48 +24,41 @@ export default function DeckBuilder() {
       toast.error('デッキ名を入力してください');
       return;
     }
-    
+
     createNewDeck(deckName, deckDescription);
     toast.success('新しいデッキを作成しました');
   };
 
   const handleSaveDeck = async () => {
     const validation = validateDeck();
-    
+
     if (!validation.isValid) {
       toast.error('デッキを保存できません', {
         description: validation.errors.join('\n')
       });
       return;
     }
-    
-    // 実際のAPIが実装されたら、ここでデッキを保存する処理を追加
-    // 例:
-    // try {
-    //   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/decks`, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${jwt}`
-    //     },
-    //     body: JSON.stringify(currentDeck)
-    //   });
-    //
-    //   if (!response.ok) {
-    //     throw new Error(`HTTP error! status: ${response.status}`);
-    //   }
-    //
-    //   toast.success('デッキを保存しました');
-    //   router.push('/home/decks');
-    // } catch (error) {
-    //   console.error('Failed to save deck:', error);
-    //   toast.error('デッキの保存に失敗しました');
-    // }
-    
-    // 現在はAPIがないので成功メッセージのみ表示
-    toast.success('デッキを保存しました（APIは今後実装予定）');
+
+    try {
+      if (!currentDeck) {
+        toast.error('デッキが存在しません');
+        return;
+      }
+      const result = await saveDeck(currentDeck);
+
+      if (result.success) {
+        toast.success('デッキを保存しました');
+        router.push('/home/deck/list');
+      } else {
+        toast.error('デッキの保存に失敗しました', {
+          description: result.error
+        });
+      }
+    } catch (error) {
+      toast.error('デッキの保存に失敗しました');
+    }
   };
-  
+
   const handleNewDeck = () => {
     clearDeck();
     setDeckName('');

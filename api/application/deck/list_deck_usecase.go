@@ -3,10 +3,12 @@ package deck
 import (
 	"api/domain/deck"
 	"context"
+	"errors"
 )
 
 type IListDeckUseCase interface {
 	GetUserDecks(ctx context.Context, userId string) ([]*DeckDto, error)
+	GetDeckById(ctx context.Context, deckId int) (*DeckDto, error)
 }
 
 type ListDeckUseCase struct {
@@ -73,4 +75,56 @@ func (u *ListDeckUseCase) GetUserDecks(ctx context.Context, userId string) ([]*D
 	}
 
 	return deckDtos, nil
+}
+
+func (u *ListDeckUseCase) GetDeckById(ctx context.Context, deckId int) (*DeckDto, error) {
+	d, err := u.deckRepository.FindById(ctx, deckId)
+	if err != nil {
+		return nil, err
+	}
+	if d == nil {
+		return nil, errors.New("デッキが見つかりません")
+	}
+
+	var mainCardDto *CardDto
+	var subCardDto *CardDto
+	// メインカードがある場合は変換
+	if d.GetMainCard() != nil {
+		mainCardDto = &CardDto{
+			ID:       d.GetMainCard().GetId(),
+			Name:     d.GetMainCard().GetName(),
+			Category: getCardCategory(d.GetMainCard().GetCardType()),
+			ImageURL: d.GetMainCard().GetImageUrl(),
+		}
+	}
+	// サブカードがある場合は変換
+	if d.GetSubCard() != nil {
+		subCardDto = &CardDto{
+			ID:       d.GetSubCard().GetId(),
+			Name:     d.GetSubCard().GetName(),
+			Category: getCardCategory(d.GetSubCard().GetCardType()),
+			ImageURL: d.GetSubCard().GetImageUrl(),
+		}
+	}
+
+	// デッキカードの変換
+	var deckCardDtos []DeckCardWithQtyDto
+	for _, c := range d.GetCards() {
+		deckCardDtos = append(deckCardDtos, DeckCardWithQtyDto{
+			ID:       c.GetCard().GetId(),
+			Name:     c.GetCard().GetName(),
+			Category: getCardCategory(c.GetCard().GetCardType()),
+			ImageURL: c.GetCard().GetImageUrl(),
+			Quantity: c.GetQuantity(),
+		})
+	}
+
+	return &DeckDto{
+		ID:          d.GetId(),
+		Name:        d.GetName(),
+		Description: d.GetDescription(),
+		MainCard:    mainCardDto,
+		SubCard:     subCardDto,
+		Cards:       deckCardDtos,
+	}, nil
 }

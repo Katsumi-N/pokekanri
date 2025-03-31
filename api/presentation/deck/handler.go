@@ -368,3 +368,43 @@ func (h *deckHandler) DeleteDeck(c echo.Context) error {
 		"message": "デッキが削除されました",
 	})
 }
+
+// GetDeckById godoc
+// @Summary Get deck by ID
+// @Tags deck
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "Deck ID"
+// @Success 200 {object} getDeckByIdResponse
+// @Router /v1/decks/detail/{id} [get]
+func (h *deckHandler) GetDeckById(c echo.Context) error {
+	deckIdStr := c.Param("id")
+	deckId, err := strconv.Atoi(deckIdStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"result": false,
+			"error":  "不正なデッキIDです",
+		})
+	}
+
+	deck, err := h.listDeckUseCase.GetDeckById(c.Request().Context(), deckId)
+	if err != nil {
+		if errors.Is(err, errors.New("デッキが見つかりません")) {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"result": false,
+				"error":  "デッキが見つかりません",
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"result": false,
+			"error":  err.Error(),
+		})
+	}
+
+	// レスポンスを生成
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"result": true,
+		"deck":   deck,
+	})
+}

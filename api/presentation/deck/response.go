@@ -19,8 +19,23 @@ type validateDeckResponse struct {
 	Errors  []string `json:"errors,omitempty"`
 }
 
+// UpdateDeck Response
 type updateDeckResponse struct {
 	Result bool        `json:"result"`
 	Deck   interface{} `json:"deck,omitempty"`
 	Error  string      `json:"error,omitempty"`
+}
+
+// GetDeckById Response
+type getDeckByIdResponse struct {
+	Result bool        `json:"result"`
+	Deck   interface{} `json:"deck,omitempty"`
+	Error  string      `json:"error,omitempty"`
+}
+
+// DeleteDeck Response
+type deleteDeckResponse struct {
+	Result  bool   `json:"result"`
+	Message string `json:"message,omitempty"`
+	Error   string `json:"error,omitempty"`
 }

@@ -111,6 +111,7 @@ func deckRoute(g *echo.Group, jwtMiddleware echo.MiddlewareFunc) {
 
 	group := g.Group("/decks", jwtMiddleware)
 	group.GET("", deckHandler.GetUserDecks)
+	group.GET("/detail/:id", deckHandler.GetDeckById)
 	group.POST("/create", deckHandler.CreateDeck)
 	group.POST("/validate", deckHandler.ValidateDeck)
 	group.POST("/edit/:id", deckHandler.UpdateDeck)
