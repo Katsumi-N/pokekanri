@@ -17,6 +17,7 @@ interface DeckContextType {
   addSubCard: (card: DeckCard) => void;
   removeMainCard: () => void;
   removeSubCard: () => void;
+  loadDeck: (deck: Deck) => void;
 }
 
 export interface DeckValidationResult {
@@ -43,6 +44,8 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
     setCurrentDeck({
       name,
       description,
+      mainCard: mainCard || { id: 0, name: '', image_url: '', category: 'pokemon' },
+      subCard: subCard || null,
       cards: []
     });
   };
@@ -57,9 +60,9 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
       if (existingCard) {
         return {
           ...prev,
-          cards: prev.cards.map(c => 
+          cards: prev.cards.map(c =>
             c.name === card.name && c.category === card.category
-              ? { ...c, quantity: c.quantity + quantity } 
+              ? { ...c, quantity: c.quantity + quantity }
               : c
           )
         };
@@ -91,7 +94,7 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
       if (!prev) return prev;
       return {
         ...prev,
-        cards: prev.cards.map(c => 
+        cards: prev.cards.map(c =>
           c.id === cardId ? { ...c, quantity } : c
         )
       };
@@ -100,7 +103,7 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
 
   const validateDeck = (): DeckValidationResult => {
     const errors: string[] = [];
-    
+
     if (!currentDeck) {
       errors.push('デッキが作成されていません');
       return { isValid: false, errors };
@@ -127,13 +130,13 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
           cardCounts[key] = 0;
         }
         cardCounts[key] += card.quantity;
-        
+
         if (cardCounts[key] > 4) {
           errors.push(`同名カードは4枚までしか入れられません（${card.id}）`);
         }
       }
     });
-    
+
     return {
       isValid: errors.length === 0,
       errors
@@ -146,10 +149,25 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
 
   const addMainCard = (card: DeckCard) => {
     setMainCard(card);
+    setCurrentDeck(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        mainCard: card
+      };
+    }
+    );
   };
 
   const addSubCard = (card: DeckCard) => {
     setSubCard(card);
+    setCurrentDeck(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        subCard: card
+      };
+    });
   };
 
   const removeMainCard = () => {
@@ -160,21 +178,30 @@ export const DeckProvider = ({ children }: { children: ReactNode }) => {
     setSubCard(null);
   };
 
+  const loadDeck = (deck: Deck) => {
+    setCurrentDeck(deck);
+    setMainCard(deck.mainCard);
+    if (deck.subCard) {
+      setSubCard(deck.subCard);
+    }
+  };
+
   return (
-    <DeckContext.Provider value={{ 
+    <DeckContext.Provider value={{
       currentDeck,
       mainCard,
       subCard,
-      createNewDeck, 
-      addCardToDeck, 
-      removeCardFromDeck, 
-      updateCardQuantity, 
+      createNewDeck,
+      addCardToDeck,
+      removeCardFromDeck,
+      updateCardQuantity,
       validateDeck,
       clearDeck,
       addMainCard,
       addSubCard,
       removeMainCard,
-      removeSubCard
+      removeSubCard,
+      loadDeck,
     }}>
       {children}
     </DeckContext.Provider>

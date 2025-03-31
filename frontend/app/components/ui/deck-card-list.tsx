@@ -1,8 +1,7 @@
 'use client';
 
 import { useDeckContext } from '@/context/DeckContext';
-import { useState, useEffect, useRef } from 'react';
-import { CardInfo } from '@/lib/card';
+import { useState, useRef } from 'react';
 import NextImage from 'next/image';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
@@ -10,7 +9,7 @@ import { DeckCard, DeckCardWithQuantity } from '@/types/deck';
 
 export default function DeckCardList() {
   const { currentDeck, mainCard, subCard, removeCardFromDeck, updateCardQuantity, addMainCard, addSubCard, removeMainCard, removeSubCard } = useDeckContext();
-  
+
   const [draggingCard, setDraggingCard] = useState<DeckCard | null>(null);
   const mainCardDropRef = useRef<HTMLDivElement>(null);
   const subCardDropRef = useRef<HTMLDivElement>(null);
@@ -27,7 +26,7 @@ export default function DeckCardList() {
   };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // これによりドロップが可能になる
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
@@ -84,12 +83,12 @@ export default function DeckCardList() {
           <h3 className="text-lg font-semibold mb-2">メインカード</h3>
           {mainCard ? (
             <div className="flex flex-col items-center gap-2">
-              <NextImage 
-                src={`/images/${mainCard.image_url}`} 
-                alt={mainCard.name} 
-                width={200} 
-                height={280} 
-                className="object-cover rounded-md" 
+              <NextImage
+                src={`/images/${mainCard.image_url}`}
+                alt={mainCard.name}
+                width={200}
+                height={280}
+                className="object-cover rounded-md"
               />
               <h4 className="font-semibold">{mainCard.name}</h4>
               <Button
@@ -116,12 +115,12 @@ export default function DeckCardList() {
           <h3 className="text-lg font-semibold mb-2">サブカード</h3>
           {subCard ? (
             <div className="flex flex-col items-center gap-2">
-              <NextImage 
-                src={`/images/${subCard.image_url}`} 
-                alt={subCard.name} 
-                width={200} 
-                height={280} 
-                className="object-cover rounded-md" 
+              <NextImage
+                src={`/images/${subCard.image_url}`}
+                alt={subCard.name}
+                width={200}
+                height={280}
+                className="object-cover rounded-md"
               />
               <h4 className="font-semibold">{subCard.name}</h4>
               <Button
@@ -177,8 +176,8 @@ export default function DeckCardList() {
 
   function renderCardList(cards: DeckCardWithQuantity[]) {
     return cards.map(card => (
-      <div 
-        key={card.id} 
+      <div
+        key={card.id}
         className="bg-white shadow-md rounded-lg p-4"
         draggable
         onDragStart={(e) => handleDragStart(e, card)}
@@ -186,12 +185,12 @@ export default function DeckCardList() {
       >
         <div className="mb-3 cursor-move">
           {card.image_url && (
-            <NextImage 
-              src={`/images/${card.image_url}`} 
-              alt={card.name} 
-              width={100} 
-              height={140} 
-              className="object-cover rounded-md mb-2" 
+            <NextImage
+              src={`/images/${card.image_url}`}
+              alt={card.name}
+              width={100}
+              height={140}
+              className="object-cover rounded-md mb-2"
             />
           )}
           <h4 className="font-semibold">{card.name}</h4>
