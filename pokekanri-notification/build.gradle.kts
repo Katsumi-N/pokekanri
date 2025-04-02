@@ -37,6 +37,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -115,6 +116,13 @@ dependencies {
 	implementation("com.github.database-rider:rider-core:1.41.0")
 	implementation("com.github.database-rider:rider-spring:1.41.0")
 	testImplementation("com.github.database-rider:rider-junit5:1.41.0")
+
+	/**
+	 * jwt
+	 */
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5") // JSONパーサーにJacksonを使う場合
 }
 
 kotlin {
