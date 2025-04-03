@@ -22,11 +22,11 @@ class NotificationTest : DescribeSpec({
     )
 
     describe("Notification") {
-        describe("create") {
+        describe("new") {
             it("任意のAnnounceIdとUserIdでNotificationを作成できること") {
                 checkAll(announcementIdArb, userIdArb) { announcementId, userId ->
                     val before = LocalDateTime.now()
-                    val notification = Notification.create(
+                    val notification = Notification.new(
                         announcementId = announcementId,
                         userId = userId
                     )

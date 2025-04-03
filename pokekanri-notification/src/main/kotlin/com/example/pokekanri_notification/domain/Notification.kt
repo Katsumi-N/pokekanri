@@ -13,7 +13,7 @@ data class Notification(
     val createdAt: LocalDateTime
 ) {
     companion object {
-        fun create(
+        fun new(
             announcementId: AnnouncementId,
             userId: UserId,
         ): Notification = Notification(
@@ -35,7 +35,7 @@ data class Notification(
 value class NotificationId(val value: Long)
 
 @JvmInline
-value class UserId(val value: Long)
+value class UserId(val value: String)
 
 sealed interface NotificationError {
     data object AlreadyRead : NotificationError

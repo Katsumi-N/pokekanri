@@ -1,20 +1,46 @@
 package com.example.pokekanri_notification.domain
 
-import java.time.LocalDateTime
+import arrow.core.EitherNel
+import arrow.core.raise.either
+import arrow.core.raise.zipOrAccumulate
+import com.example.pokekanri_notification.util.ValidationError
 
-data class Announcement(
+class Announcement private constructor(
     val id: AnnouncementId?,
     val title: Title,
     val content: Content,
-    val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun create(title: String, content: String): Announcement {
+        /**
+         * バリデーションあり
+         */
+        fun new(title: String, content: String): EitherNel<ValidationError, Announcement> {
+            return either {
+                zipOrAccumulate(
+                    { Title.new(title).bindNel() },
+                    { Content.new(content).bindNel() },
+                ) { validatedTitle, validatedContent ->
+                    Announcement(
+                        id = null,
+                        title = validatedTitle,
+                        content = validatedContent
+                    )
+                }
+            }
+        }
+
+        /**
+         * バリデーションなし
+         */
+        fun newWithoutValidation(
+            id: AnnouncementId?,
+            title: String,
+            content: String
+        ): Announcement {
             return Announcement(
-                id = null,
-                title = Title(title),
-                content = Content(content),
-                createdAt = LocalDateTime.now(),
+                id = id,
+                title = TitleWithoutValidation(title),
+                content = ContentWithoutValidation(content)
             )
         }
     }
@@ -23,18 +49,3 @@ data class Announcement(
 @JvmInline
 value class AnnouncementId(val value: Long)
 
-@JvmInline
-value class Title(val value: String) {
-    init {
-        require(value.isNotBlank()) { "タイトルは空白にできません" }
-        require(value.length <= 100) { "タイトルは100文字以内である必要があります" }
-    }
-}
-
-@JvmInline
-value class Content(val value: String) {
-    init {
-        require(value.isNotBlank()) { "内容は空白にできません" }
-        require(value.length <= 1000) { "内容は1000文字以内である必要があります" }
-    }
-}
