@@ -9,12 +9,13 @@ class Announcement private constructor(
     val id: AnnouncementId?,
     val title: Title,
     val content: Content,
+    val toAll: Boolean = false,
 ) {
     companion object {
         /**
          * バリデーションあり
          */
-        fun new(title: String, content: String): EitherNel<ValidationError, Announcement> {
+        fun new(title: String, content: String, toAll: Boolean): EitherNel<ValidationError, Announcement> {
             return either {
                 zipOrAccumulate(
                     { Title.new(title).bindNel() },
@@ -23,7 +24,8 @@ class Announcement private constructor(
                     Announcement(
                         id = null,
                         title = validatedTitle,
-                        content = validatedContent
+                        content = validatedContent,
+                        toAll = toAll
                     )
                 }
             }
@@ -35,12 +37,14 @@ class Announcement private constructor(
         fun newWithoutValidation(
             id: AnnouncementId?,
             title: String,
-            content: String
+            content: String,
+            toAll: Boolean = false
         ): Announcement {
             return Announcement(
                 id = id,
                 title = TitleWithoutValidation(title),
-                content = ContentWithoutValidation(content)
+                content = ContentWithoutValidation(content),
+                toAll = toAll
             )
         }
     }

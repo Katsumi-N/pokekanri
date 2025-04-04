@@ -19,7 +19,8 @@ class AnnouncementTest : DescribeSpec({
                 checkAll(validTitleStringArb, validContentStringArb) { title, content ->
                     val announcementEither = Announcement.new(
                         title = title,
-                        content = content
+                        content = content,
+                        toAll = false
                     )
                     
                     announcementEither.shouldBeRight { "Announcement should be valid format $it" }
@@ -33,7 +34,8 @@ class AnnouncementTest : DescribeSpec({
                     val announcement = Announcement.newWithoutValidation(
                         id = id,
                         title = title,
-                        content = content
+                        content = content,
+                        toAll = false
                     )
                     
                     announcement.id shouldBe id
@@ -47,7 +49,8 @@ class AnnouncementTest : DescribeSpec({
                     val announcement = Announcement.newWithoutValidation(
                         id = null,
                         title = title,
-                        content = content
+                        content = content,
+                        toAll = false
                     )
                     
                     announcement.id shouldBe null

@@ -52,9 +52,17 @@ class NotificationTest(
                 content { contentType(MediaType.APPLICATION_JSON) }
             }.andReturn().response.contentAsString
 
-            response shouldContain "\"id\":1"
-            response shouldContain "\"announcementId\":101"
+            response shouldContain "\"id\":0"
+            response shouldContain "\"announcementId\":103"
+            response shouldContain "\"title\":\"全体お知らせタイトル1\""
             response shouldContain "\"isRead\":false"
+            response shouldContain "\"toAll\":true"
+
+            response shouldContain "\"id\":3"
+            response shouldContain "\"announcementId\":102"
+            response shouldContain "\"title\":\"個別お知らせタイトル2\""
+            response shouldContain "\"isRead\":false"
+            response shouldContain "\"toAll\":false"
         }
     }
 
@@ -102,19 +110,22 @@ private fun setupTestData(jdbcTemplate: JdbcTemplate) {
     // お知らせ
     jdbcTemplate.update(
         """
-            INSERT INTO announcements (id, title, content, created_at)
-            VALUES (101, 'お知らせタイトル1', 'お知らせ内容1', ?),
-                   (102, 'お知らせタイトル2', 'お知らせ内容2', ?)
-        """, now, now
+            INSERT INTO announcements (id, title, content, to_all, created_at)
+            VALUES (101, '個別お知らせタイトル1', '個別お知らせ', false, ?),
+                   (102, '個別お知らせタイトル2', '個別お知らせ', false, ?),
+                   (103, '全体お知らせタイトル1', '全体お知らせ', true, ?)
+        """, now, now, now
     )
 
     // 通知
+    // user123は102, 103が未読
     jdbcTemplate.update(
         """
             INSERT INTO notifications (id, user_id, announcement_id, is_read, created_at)
-            VALUES (1, 'user123', 101, false, ?),
-                   (2, 'user124', 102, true, ?)
-        """, now, now
+            VALUES (1, 'user123', 101, true, ?),
+                   (2, 'user124', 102, true, ?),
+                   (3, 'user123', 102, false, ?)
+        """, now, now, now
     )
 }
 

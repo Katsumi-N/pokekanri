@@ -6,7 +6,8 @@ class NotificationWithContent private constructor(
     val userId: UserId,
     val isRead: Boolean,
     val title: Title,
-    val content: Content
+    val content: Content,
+    val toAll: Boolean
 ) {
     companion object {
         fun new(
@@ -15,14 +16,16 @@ class NotificationWithContent private constructor(
             userId: UserId,
             isRead: Boolean,
             title: Title,
-            content: Content
+            content: Content,
+            toAll: Boolean
         ): NotificationWithContent = NotificationWithContent(
             id = id,
             announcementId = announcementId,
             userId = userId,
             isRead = isRead,
             title = title,
-            content = content
+            content = content,
+            toAll = toAll
         )
     }
 
@@ -38,5 +41,15 @@ class NotificationWithContent private constructor(
         if (content != other.content) return false
 
         return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + announcementId.hashCode()
+        result = 31 * result + userId.hashCode()
+        result = 31 * result + isRead.hashCode()
+        result = 31 * result + title.hashCode()
+        result = 31 * result + content.hashCode()
+        return result
     }
 }
