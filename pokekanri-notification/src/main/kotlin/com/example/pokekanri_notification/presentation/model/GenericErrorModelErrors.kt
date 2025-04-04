@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  *
  * エラーレスポンスの詳細を List<String> 型で記述する
  *
- * @property body
+ * @property messages
  */
 data class GenericErrorModelErrors(
-    @field:JsonProperty("body", required = true) val body: List<String>,
+    @field:JsonProperty("messages", required = true) val messages: List<String>,
 )

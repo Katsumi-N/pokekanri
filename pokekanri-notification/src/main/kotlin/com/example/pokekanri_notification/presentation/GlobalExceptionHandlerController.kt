@@ -37,7 +37,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = listOf("該当するエンドポイントがありませんでした")
+                    messages = listOf("該当するエンドポイントがありませんでした")
                 ),
             ),
             HttpStatus.NOT_FOUND
@@ -57,7 +57,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = listOf("該当エンドポイントで${e.method}メソッドの処理は許可されていません")
+                    messages = listOf("該当エンドポイントで${e.method}メソッドの処理は許可されていません")
                 ),
             ),
             HttpStatus.METHOD_NOT_ALLOWED
@@ -77,7 +77,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = listOf("該当エンドポイントで${e.contentType}のリクエストはサポートされていません")
+                    messages = listOf("該当エンドポイントで${e.contentType}のリクエストはサポートされていません")
                 ),
             ),
             HttpStatus.UNSUPPORTED_MEDIA_TYPE
@@ -98,7 +98,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = listOf("エンドポイントが想定していない形式または型のリクエストが送られました")
+                    messages = listOf("エンドポイントが想定していない形式または型のリクエストが送られました")
                 ),
             ),
             HttpStatus.BAD_REQUEST
@@ -123,7 +123,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = messages
+                    messages = messages
                 ),
             ),
             HttpStatus.BAD_REQUEST
@@ -163,7 +163,7 @@ class GlobalExceptionHandleController {
         return ResponseEntity<GenericErrorModel>(
             GenericErrorModel(
                 errors = GenericErrorModelErrors(
-                    body = messages
+                    messages = messages
                 ),
             ),
             HttpStatus.BAD_REQUEST
