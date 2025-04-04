@@ -7,6 +7,7 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.localDateTime
+import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -15,7 +16,7 @@ import java.time.temporal.ChronoUnit
 class NotificationTest : DescribeSpec({
     val notificationIdArb = Arb.long(1L..1000L).map { NotificationId(it) }
     val announcementIdArb = Arb.long(1L..1000L).map { AnnouncementId(it) }
-    val userIdArb = Arb.long(1L..1000L).map { UserId(it) }
+    val userIdArb = Arb.string(minSize = 32, maxSize = 32).map { UserId(it) }
     val pastDateTimeArb = Arb.localDateTime(
         minYear = 2024,
         maxYear = LocalDateTime.now().year

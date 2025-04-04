@@ -51,6 +51,11 @@ dependencies {
 	testImplementation("io.kotest:kotest-assertions-core:5.8.1")
 	testImplementation("io.kotest.extensions:kotest-assertions-arrow:2.0.0")
 	testImplementation("io.kotest:kotest-property:5.8.1")
+	implementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
+
+	// testcontainers
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:mysql")
 	
 	/**
 	 * detektの拡張: detekt-formatting
