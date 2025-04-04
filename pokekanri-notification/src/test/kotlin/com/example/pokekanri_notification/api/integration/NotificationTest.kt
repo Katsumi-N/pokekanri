@@ -172,7 +172,7 @@ class NotificationTest(
                 content {
                     contentType(MediaType.APPLICATION_JSON)
                     jsonPath("$.errors.messages[0]") { value("Notification already exists for this user and announcement.") }
-                    jsonPath("$.errors.messages.length()") { value(1) }v
+                    jsonPath("$.errors.messages.length()") { value(1) }
                 }
             }
         }
