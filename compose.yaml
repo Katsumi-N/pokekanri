@@ -13,6 +13,20 @@ services:
         target: /var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
       - ./sql/my.cnf:/etc/mysql/conf.d/my.cnf
+  mysql-notification:
+    image: mysql:8.0
+    container_name: notification_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: pokekanridb
+    ports:
+      - "13307:3306"
+    volumes:
+      - type: volume
+        source: mysql-notification-data
+        target: /var/lib/mysql
+      - ./sql/notification:/docker-entrypoint-initdb.d
+      - ./sql/my.cnf:/etc/mysql/conf.d/my.cnf
   elasticsearch:
     container_name: pokekanri_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
@@ -50,4 +64,6 @@ volumes:
   mysql-data:
     driver: "local"
   elasticsearch-data:
+    driver: "local"
+  mysql-notification-data:
     driver: "local"
